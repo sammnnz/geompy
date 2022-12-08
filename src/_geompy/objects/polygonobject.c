@@ -59,7 +59,7 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
     PyObject* tmp_tuple = NULL;
     PyObject* verts;
 
-    if (!PyTuple_Check(args)) {
+    if (!PyTuple_CheckExact(args)) {
         return -1;
     }
 
@@ -91,7 +91,7 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
 
         self->_verts = _verts;
 
-        if (!PyArg_ParseTuple(tmp_tuple, "dd:polygon_init", &x, &y)) {
+        if (!PyArg_ParseTuple((PyTupleObject*)tmp_tuple, "dd:polygon_init", &x, &y)) {
             free(self->_verts);
             goto parse_failed;
         }
