@@ -11,9 +11,10 @@ class polygon "PyPolygonObject *" "&PyPolygon_Type"
 /*[clinic end generated code: output=da39a3ee5e6b4b0d input=afa59843565ccc12]*/
 
 PyDoc_STRVAR(polygon_doc,
-    "polygon((1, 2, 3), (4, 5, 6), (7, 8, 9))\n\
+    "Polygon object class.\n\
 \n\
-Create a polygon object.");
+Typical use:\n\
+>>> polygon((1, 2, 3), (4, 5, 6), (7, 8, 9))");
 
 #define NONPy_CLEAR(op) \
     free(op); \
@@ -58,7 +59,7 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
     PyObject* tmp_tuple = NULL;
     PyObject* verts;
 
-    if (!PyTuple_CheckExact(args)) {
+    if (!PyTuple_Check(args)) {
         return -1;
     }
 
@@ -72,7 +73,7 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
     i = 0;
     while (a_size > i) {
         tmp_tuple = PyTuple_GetItem(args, i);
-        if (!PyTuple_CheckExact(tmp_tuple)) {
+        if (!PyTuple_Check(tmp_tuple)) {
             free(self->_verts);
 
             if (i < 2) {
@@ -183,7 +184,7 @@ static PyMappingMethods polygon_as_mapping = {
 };
 
 PyDoc_STRVAR(polygon_verts_doc,
-    "Tuple of polygon's verticals");
+    " Tuple of polygon's verticals ");
 
 #define OFF(x) offsetof(PyPolygonObject, x)
 
@@ -213,13 +214,14 @@ polygon.is_inner_point
     point: 'O'
         Point for which we determine where it lies relative to the polygon.
  
-Return True if:
+Returns
 
+True if:
 1. point is vertical of polygon;
 2. point lies on the boundary of the polygon;
 3. point lies inside the polygon.
 
-Else, return False (point lies outside the polygon).
+else False (point lies outside the polygon).
 [clinic start generated code]*/
 
 static PyObject*

@@ -9,13 +9,14 @@ PyDoc_STRVAR(polygon_is_inner_point__doc__,
 "  point\n"
 "    Point for which we determine where it lies relative to the polygon.\n"
 "\n"
-"Return True if:\n"
+"Returns\n"
 "\n"
+"True if:\n"
 "1. point is vertical of polygon;\n"
 "2. point lies on the boundary of the polygon;\n"
 "3. point lies inside the polygon.\n"
 "\n"
-"Else, return False (point lies outside the polygon).");
+"else False (point lies outside the polygon).");
 
 #define POLYGON_IS_INNER_POINT_METHODDEF    \
     {"is_inner_point", (PyCFunction)(void(*)(void))polygon_is_inner_point, METH_FASTCALL|METH_KEYWORDS, polygon_is_inner_point__doc__},
