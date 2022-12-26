@@ -29,7 +29,7 @@ class Render(object):
 
     >>> r = Render()
     >>> p1, p2, p3 =  point(0, 0), point(1, 2), point(2, 1)
-    >>> r.points((p1, p2), c='black')
+    >>> r.rand_points((p1, p2), c='black')
     >>> r.polygon(polygon(p1, p2, p3))
     >>> r.display(0, 0) # Created plots are displayed
     """
