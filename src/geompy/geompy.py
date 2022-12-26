@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-from _geompy import *
+from _geompy import *  # noqa: F401, F403
 
 
 # TODO: implement in C
