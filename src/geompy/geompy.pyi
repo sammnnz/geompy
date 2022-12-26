@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import Any, Generator, Optional, overload, Sequence, Tuple, Type, Union
+from typing import Any, Generator, Optional, overload, Sequence, Tuple, Type, TYPE_CHECKING, Union
+from _typing import RealNumber
 
 Point2D = Union["point", Tuple["RealNumber", "RealNumber"]]
 Points = Union["point", Sequence["point"]]
-RealNumber = Union[int, float]
 
 # noinspection SpellCheckingInspection
 def generate_random_polygon(center: Point2D, radius: RealNumber = ..., verts_num: int = ...) -> polygon: ...
@@ -18,7 +18,13 @@ class polygon(object):
     # noinspection SpellCheckingInspection
     verts: Tuple[Point2D, ...] = ...
 
-class point(tuple):
+# https://github.com/python/typeshed/issues/7855#issuecomment-1128857842
+if TYPE_CHECKING:
+    _Tuple = tuple[RealNumber]
+else:
+    _Tuple = tuple
+
+class point(_Tuple):
     @overload
     def __new__(cls: Type[point], x: RealNumber) -> point: ...
     @overload
@@ -29,7 +35,7 @@ class point(tuple):
     def __new__(cls: Type[point], *args: RealNumber) -> point: ...
 
 class Render(object):
-    # TODO: дописать явные аннотации для ax и fig
+    # TODO: write annotations for `ax` и `fig`
     ax: Any
     fig: Any
     def __init__(self) -> None: ...
@@ -37,5 +43,5 @@ class Render(object):
     def points(self, p: Points, c: str = ..., s: Union[RealNumber, Sequence[RealNumber]] = ...) -> None: ...
     def polygon(self, p: polygon, c: str = ...) -> None: ...
 
-# TODO: проверить аннотацию (возвращаемое значение)
+# TODO: check annotation (return value)
 def random_points(count: int, radius: RealNumber, x: RealNumber, y: RealNumber) -> Generator[point, Any, None]: ...
