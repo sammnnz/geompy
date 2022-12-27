@@ -18,7 +18,11 @@ struct PyPolygonObject {
 
 PyAPI_DATA(PyTypeObject) PyPolygon_Type;
 
-#define PyPolygon_CheckExact(op) Py_IS_TYPE(op, &PyPolygon_Type)
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 9
+#  define PyPolygon_CheckExact(op) Py_IS_TYPE(op, &PyPolygon_Type)
+#else
+#  define PyPolygon_CheckExact(op) (Py_TYPE(op) == &PyPolygon_Type)
+#endif
 
 
 /* Public interface */
