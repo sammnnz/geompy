@@ -5,8 +5,8 @@
 
 Python/C API library for geometry calculations.
 
-###Install
+### Install
 pip install "git+https://github.com/sammnnz/GeomPy"
 
-###Usage
+### Usage
 Using the `polygon.is_inner_point` function, you can determine where the `point` is located relative to the `polygon`: outside or inside.
