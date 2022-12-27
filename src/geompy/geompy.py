@@ -40,7 +40,7 @@ class Render(object):
         self.ax = plt
         self.fig = self.ax.figure(figsize=(25, 25), dpi=50)
 
-    def display(self, x=None, y=None):
+    def display(self, x=None, y=None, block=True):
         """
         Draws a plots.
 
@@ -48,10 +48,12 @@ class Render(object):
                   X limit of current axes.
         :param y: integer or float, optional
                   Y limit of current axes.
+        :param block: bool
+                  Block of plt.show
         """
         plt.xlim(x)
         plt.ylim(y)
-        self.ax.show()
+        self.ax.show(block=block)
 
     def points(self, p, c='red', s=40):
         """
