@@ -20,9 +20,9 @@ class polygon(object):
 
 # https://github.com/python/typeshed/issues/7855#issuecomment-1128857842
 if TYPE_CHECKING:
-    _Tuple = tuple[RealNumber]
+    _Tuple = Tuple[RealNumber]
 else:
-    _Tuple = tuple
+    _Tuple = Tuple
 
 class point(_Tuple):
     @overload
