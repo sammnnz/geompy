@@ -30,19 +30,28 @@ polygon_clear(PyPolygonObject* self) {
     return 0;
 }
 
+/* look like mypy */
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
+#  define CPy_TRASHCAN_BEGIN(op, dealloc) Py_TRASHCAN_BEGIN(op, dealloc)
+#  define CPy_TRASHCAN_END(op) Py_TRASHCAN_END
+#else
+#  define CPy_TRASHCAN_BEGIN(op, dealloc) Py_TRASHCAN_SAFE_BEGIN(op)
+#  define CPy_TRASHCAN_END(op) Py_TRASHCAN_SAFE_END(op)
+#endif
+
 /*
 * Destroy PyPolygonObject
 */
 static void
 polygon_dealloc(PyPolygonObject* self) {
-    Py_TRASHCAN_BEGIN(self, polygon_dealloc);
+    CPy_TRASHCAN_BEGIN(self, polygon_dealloc)
 
     PyObject_GC_UnTrack(self);
     NONPy_CLEAR(self->_verts);
     Py_CLEAR(self->verts);
     PyObject_GC_Del(self);
 
-    Py_TRASHCAN_END;
+    CPy_TRASHCAN_END(self)
 }
 
 /*
@@ -328,6 +337,12 @@ static PyMethodDef polygon_methods[] = {
     {NULL}  /* Sentinel */
 };
 
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
+#  define ADDITIONAL_ATTRIBUTES(tp_version_tag, tp_finalize, tp_vectorcall) tp_version_tag, tp_finalize, tp_vectorcall
+#else
+#  define ADDITIONAL_ATTRIBUTES(tp_version_tag, tp_finalize, tp_vectorcall)
+#endif
+
 PyTypeObject PyPolygon_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "polygon",                              /* tp_name */
@@ -378,7 +393,5 @@ PyTypeObject PyPolygon_Type = {
     0,                                      /* tp_subclasses */
     0,                                      /* tp_weaklist */
     0,                                      /* tp_del */
-    0,                                      /* tp_version_tag */
-    0,                                      /* tp_finalize */
-    0                                       /* tp_vectorcall */
+    ADDITIONAL_ATTRIBUTES(0, 0, 0)
 };
