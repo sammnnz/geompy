@@ -25,6 +25,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r dev-requirements.txt
           pip install -e .
+      - name: Flake8, MYPY
+        run: |
+          flake8 src
+          mypy src
       - name: Test with pytest
         run: |
           pytest --cov-config=.coveragerc --verbose --color=yes --cov=pymagic --cov-append --assert=plain
