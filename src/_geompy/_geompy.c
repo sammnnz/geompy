@@ -96,7 +96,7 @@ _geompy_generate_random_polygon_impl(PyObject *module, PyObject *center,
 		}
 
 		polars[ui][0] = random_angle(0);
-		polars[ui][1] = random(0, radius);
+		polars[ui][1] = random_(0, radius);
 
 		// if there are at least three points that 
 		// do not lie on the same straight line, 

@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-double random(double start, double stop);
+double random_(double start, double stop);
 double random_angle(double start);
 
 #ifdef __cplusplus

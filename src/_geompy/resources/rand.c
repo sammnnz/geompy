@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-double random(double start, double stop) {
+double random_(double start, double stop) {
 	//srand(time(NULL));
 	return start + (stop - start) * ((double)rand() / RAND_MAX);
 };
@@ -14,6 +14,6 @@ double random(double start, double stop) {
 double random_angle(double start) {
 	if (start > 2 * M_PI) return 0.0;
 
-	return random(start, 2 * M_PI);
+	return random_(start, 2 * M_PI);
 };
 
