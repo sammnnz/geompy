@@ -6,9 +6,10 @@
 #include "../includes/_math.h"
 
 /*[clinic input]
-class polygon "PyPolygonObject *" "&PyPolygon_Type"
+module _geompy
+class _geompy.polygon "PyPolygonObject *" "&PyPolygon_Type"
 [clinic start generated code]*/
-/*[clinic end generated code: output=da39a3ee5e6b4b0d input=afa59843565ccc12]*/
+/*[clinic end generated code: output=da39a3ee5e6b4b0d input=3b980588babc08e9]*/
 
 PyDoc_STRVAR(polygon_doc,
     "Polygon object class.\n\
@@ -218,7 +219,7 @@ else cq = 3;
                                                                                             // the pseudoscalar product may be zero
 
 /*[clinic input]
-polygon.is_inner_point
+_geompy.polygon.is_inner_point
     
     point: 'O'
         Point for which we determine where it lies relative to the polygon.
@@ -233,9 +234,9 @@ True if:
 else False (point lies outside the polygon).
 [clinic start generated code]*/
 
-static PyObject*
-polygon_is_inner_point_impl(PyPolygonObject* self, PyObject* point)
-/*[clinic end generated code: output=1bd7346263dbb3a6 input=86d1e81a7c4b5eaf]*/
+static PyObject *
+_geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
+/*[clinic end generated code: output=891bbb7fdf805b92 input=fb1658ba75c0b44d]*/
 {
     double x;
     double y;
@@ -321,7 +322,7 @@ _PyPolygon_Init(PyPolygonObject* self, PyObject* args) {
 
 PyObject*
 PyPolygon_IsInnerPoint(PyPolygonObject* self, PyObject* point) {
-    return polygon_is_inner_point_impl(self, point);
+    return _geompy_polygon_is_inner_point_impl(self, point);
 }
 
 /*
@@ -333,7 +334,7 @@ PyPolygon_New(PyTypeObject* subtype, PyObject* args, PyObject* kwargs) {
 }
 
 static PyMethodDef polygon_methods[] = {
-    POLYGON_IS_INNER_POINT_METHODDEF
+    _GEOMPY_POLYGON_IS_INNER_POINT_METHODDEF
     {NULL}  /* Sentinel */
 };
 

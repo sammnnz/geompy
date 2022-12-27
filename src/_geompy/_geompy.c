@@ -53,10 +53,10 @@ Implementation of generate_random_polygon.
 
 [clinic start generated code]*/
 
-static PyObject*
-_geompy_generate_random_polygon_impl(PyObject* module, PyObject* center,
-	double radius, unsigned int verts_num)
-	/*[clinic end generated code: output=7cb2ffc9bfb2bd4d input=49274a8864cba512]*/
+static PyObject *
+_geompy_generate_random_polygon_impl(PyObject *module, PyObject *center,
+                                     double radius, unsigned int verts_num)
+/*[clinic end generated code: output=7cb2ffc9bfb2bd4d input=49274a8864cba512]*/
 {
 	double x;
 	double y;
