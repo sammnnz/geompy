@@ -3,6 +3,7 @@
 Tests for geompy.py
 """
 import geompy.geompy as gm
+import matplotlib.pyplot as plt
 # noinspection PyPackageRequirements
 import pytest
 
@@ -25,7 +26,7 @@ def render_object():
                          ]
                          )
 def test_Render_display(render_object, x, y):
-    render_object.display(x, y)
+    render_object.display(x, y, False)
     assert True is True
 
 
