@@ -12,4 +12,7 @@ pip install "git+https://github.com/sammnnz/GeomPy"
 Using the `polygon.is_inner_point` function, you can determine where the `point` is located relative to the `polygon`: outside or inside.
 
 ### Support
-Python 3.9, 3.10 on `Windows` platform.
+Python `3.7`, `3.8`, `3.9`, `3.10` on `Windows` and `Ubuntu` platform.
+
+### Example
+You can see `1.py` file from example directory.
