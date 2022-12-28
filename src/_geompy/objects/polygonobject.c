@@ -212,6 +212,11 @@ else if (*_verts <= x && *(_verts + 1) > y) cq = 1; \
 else if (*_verts < x && *(_verts + 1) <= y) cq = 2; \
 else cq = 3;
 
+// TODO: fix ubuntu gcc compiler error - undefined symbol: PSEUDO_SCALAR_PRODUCT
+#ifndef PSEUDO_SCALAR_PRODUCT
+#   define PSEUDO_SCALAR_PRODUCT(v1, v2, x, y) (*v2 - *v1) * (y - *(v1 + 1)) - (x - *v1) * (*(v2 + 1) - *(v1 + 1))
+#endif
+
 # define WINDING_SUM(cq, v1, v2, x, y, wnum) \
     if (cq == 1) wnum += 1; \
     else if (cq == 3) wnum -= 1; \
