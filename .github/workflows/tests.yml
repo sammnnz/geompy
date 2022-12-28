@@ -31,7 +31,7 @@ jobs:
 #          mypy src
       - name: Test with pytest
         run: |
-          pytest --cov-config=.coveragerc --verbose --color=yes --cov=pymagic --cov-append --assert=plain
+          pytest --cov-config=.coveragerc --verbose --color=yes --cov=geompy --cov-append --assert=plain
           coverage xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
