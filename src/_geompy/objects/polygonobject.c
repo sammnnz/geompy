@@ -26,7 +26,10 @@ Typical use:\n\
 */
 static int
 polygon_clear(PyPolygonObject* self) {
-    NONPy_CLEAR(self->_verts);
+    if (!self->_verts) {
+        NONPy_CLEAR(self->_verts);
+    }
+
     Py_CLEAR(self->verts);
     return 0;
 }
@@ -48,7 +51,10 @@ polygon_dealloc(PyPolygonObject* self) {
     CPy_TRASHCAN_BEGIN(self, polygon_dealloc)
 
     PyObject_GC_UnTrack(self);
-    NONPy_CLEAR(self->_verts);
+    if (!self->_verts) {
+        NONPy_CLEAR(self->_verts);
+    }
+
     Py_CLEAR(self->verts);
     PyObject_GC_Del(self);
 
@@ -63,76 +69,64 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
     double x;
     double y;
     double* _verts;
-    Py_ssize_t a_size;
-    Py_ssize_t i;
+    Py_ssize_t arg_size;
+    Py_ssize_t count;
     PyObject* tmp_list = NULL;
-    PyObject* tmp_tuple = NULL;
     PyObject* verts;
 
-    if (!PyTuple_CheckExact(args)) {
-        return -1;
-    }
-
-    a_size = PyTuple_Size(args);
+    arg_size = PyTuple_Size(args);
     self->_verts = (double*)malloc(sizeof(double) * 2);
     if (!self->_verts) {
         goto memory_failed;
     }
 
     tmp_list = Py_BuildValue("[]");
-    i = 0;
-    while (a_size > i) {
-        tmp_tuple = PyTuple_GetItem(args, i);
+    count = 0;
+    while (arg_size > count) {
+        PyObject* tmp_tuple;
+        tmp_tuple = PyTuple_GetItem(args, count);
         if (!PyTuple_Check(tmp_tuple)) {
-            free(self->_verts);
-
-            if (i < 2) {
-                goto parse_failed;
-            }
-
-            break;
+            goto parse_failed;
         }
 
-        i++;
-        _verts = (double*)realloc(self->_verts, sizeof(double) * 2 * i);
+        count++;
+        _verts = (double*)realloc(self->_verts, sizeof(double) * 2 * count);
         if (!_verts) {
             goto memory_failed;
         }
 
         self->_verts = _verts;
 
-        if (!PyArg_ParseTuple((PyTupleObject*)tmp_tuple, "dd:polygon_init", &x, &y)) {
-            free(self->_verts);
+        if (!PyArg_ParseTuple(tmp_tuple, "dd:polygon_init", &x, &y)) { // TODO - сделать вход любых вещественных чисел из Python
             goto parse_failed;
         }
 
-        self->_verts[2 * i - 2] = x;
-        self->_verts[2 * i - 1] = y;
-        PyList_Append(tmp_list, tmp_tuple);
+        self->_verts[2 * count - 2] = x;
+        self->_verts[2 * count - 1] = y;
+        PyList_Append(tmp_list, tmp_tuple); // ref count +1
     }
 
-    if (i < 3) {
-        free(self->_verts);
+    if (count < 3) {
         goto parse_failed;
     }
 
-    verts = PyList_AsTuple(tmp_list);
+    verts = PyList_AsTuple(tmp_list); // ref count +1
     self->verts = verts;
+    Py_DECREF(tmp_list); // ref count -1
 
-    Py_DECREF(tmp_list);
     return 0;
 
 memory_failed:
     Py_XDECREF(tmp_list);
     PyErr_SetString(PyExc_MemoryError,
-        "malloc error");
+        "Malloc error");
 
     return -1;
 
 parse_failed:
     Py_DECREF(tmp_list);
     PyErr_SetString(PyExc_TypeError,
-        "argument parse error");
+        "Argument parse error");
 
     return -1;
 }
