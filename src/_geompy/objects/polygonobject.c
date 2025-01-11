@@ -17,24 +17,23 @@ PyDoc_STRVAR(polygon_doc,
 Typical use:\n\
 >>> polygon((1, 2, 3), (4, 5, 6), (7, 8, 9))");
 
-#define NONPy_CLEAR(op) \
-    free(op); \
-    op = NULL;
+#define NonPy_CLEAR(op) \
+    if (op != NULL) {   \
+        free(op);       \
+        op = NULL;      \
+    }                   \
 
 /*
 * Clear attributes ( use when PyPolygon_Type include Py_TPFLAGS_HAVE_GC flag )
 */
 static int
 polygon_clear(PyPolygonObject* self) {
-    if (!self->_verts) {
-        NONPy_CLEAR(self->_verts);
-    }
-
+    NonPy_CLEAR(self->_verts);
     Py_CLEAR(self->verts);
     return 0;
 }
 
-/* look like mypy */
+/* Look like mypy */
 #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
 #  define CPy_TRASHCAN_BEGIN(op, dealloc) Py_TRASHCAN_BEGIN(op, dealloc)
 #  define CPy_TRASHCAN_END(op) Py_TRASHCAN_END
@@ -51,10 +50,7 @@ polygon_dealloc(PyPolygonObject* self) {
     CPy_TRASHCAN_BEGIN(self, polygon_dealloc)
 
     PyObject_GC_UnTrack(self);
-    if (!self->_verts) {
-        NONPy_CLEAR(self->_verts);
-    }
-
+    NonPy_CLEAR(self->_verts);
     Py_CLEAR(self->verts);
     PyObject_GC_Del(self);
 
@@ -69,65 +65,69 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
     double x;
     double y;
     double* _verts;
-    Py_ssize_t arg_size;
+    Py_ssize_t args_size;
     Py_ssize_t count;
-    PyObject* tmp_list = NULL;
-    PyObject* verts;
 
-    arg_size = PyTuple_Size(args);
-    self->_verts = (double*)malloc(sizeof(double) * 2);
-    if (!self->_verts) {
-        goto memory_failed;
+    if (!PyTuple_CheckExact(args)) { // TODO - уточнить может ли приходить другой тип или нет (возможно данная проверка не нужна)
+        PyErr_SetString(PyExc_TypeError,
+            "Invalid arguments.");
+
+        return -1;
     }
 
-    tmp_list = Py_BuildValue("[]");
+    args_size = PyTuple_Size(args);
+
+    if (args_size < 3) {
+        PyErr_SetString(PyExc_TypeError,
+            "Polygon should be include not less 3 points.");
+        
+        return -1;
+    }
+
+    self->_verts = (double*)malloc(sizeof(double) * 2);
+    if (!self->_verts) {
+        PyErr_SetString(PyExc_MemoryError,
+            "Malloc error.");
+
+        return -1;
+    }
+
+    self->verts = PyTuple_New(args_size);
     count = 0;
-    while (arg_size > count) {
-        PyObject* tmp_tuple;
-        tmp_tuple = PyTuple_GetItem(args, count);
-        if (!PyTuple_Check(tmp_tuple)) {
-            goto parse_failed;
+    while (count < args_size) {
+        PyObject* o;
+        o = PyTuple_GetItem(args, count);
+        PyTuple_SetItem(self->verts, count, o);
+        Py_INCREF(o);
+        if (!PyTuple_CheckExact(o)) {
+            PyErr_SetString(PyExc_TypeError,
+                "Every argument should be only tuple.");
+            goto except;
         }
 
         count++;
         _verts = (double*)realloc(self->_verts, sizeof(double) * 2 * count);
         if (!_verts) {
-            goto memory_failed;
+            PyErr_SetString(PyExc_MemoryError,
+                "Malloc error.");
+            goto except;
         }
 
         self->_verts = _verts;
 
-        if (!PyArg_ParseTuple(tmp_tuple, "dd:polygon_init", &x, &y)) { // TODO - сделать вход любых вещественных чисел из Python
-            goto parse_failed;
+        if (!PyArg_ParseTuple(o, "dd:polygon_init", &x, &y)) { // TODO - сделать вход любых вещественных чисел из Python
+            PyErr_SetString(PyExc_TypeError,
+                "Every point in polygon should be consist of 2 verticals. Every vertical should be only a real number.");
+            goto except;
         }
 
         self->_verts[2 * count - 2] = x;
         self->_verts[2 * count - 1] = y;
-        PyList_Append(tmp_list, tmp_tuple); // ref count +1
     }
-
-    if (count < 3) {
-        goto parse_failed;
-    }
-
-    verts = PyList_AsTuple(tmp_list); // ref count +1
-    self->verts = verts;
-    Py_DECREF(tmp_list); // ref count -1
 
     return 0;
 
-memory_failed:
-    Py_XDECREF(tmp_list);
-    PyErr_SetString(PyExc_MemoryError,
-        "Malloc error");
-
-    return -1;
-
-parse_failed:
-    Py_DECREF(tmp_list);
-    PyErr_SetString(PyExc_TypeError,
-        "Argument parse error");
-
+except:
     return -1;
 }
 
@@ -154,7 +154,6 @@ polygon_new(PyTypeObject* subtype, PyObject* args, PyObject* kwargs) {
 static int
 polygon_traverse(PyPolygonObject* self, visitproc visit, void* arg)
 {
-    //Py_VISIT(self->_verts);
     Py_VISIT(self->verts);
     return 0;
 }
@@ -173,7 +172,7 @@ polygon_subscript(PyPolygonObject* self, PyObject* index) {
 
     ix = PyLong_AsSsize_t(index);
     if (ix == -1 && PyErr_Occurred()) {
-        PyErr_SetString(PyExc_OverflowError, "index overflow");
+        PyErr_SetString(PyExc_OverflowError, "Index overflow.");
         return NULL;
     }
 
