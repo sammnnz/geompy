@@ -1,9 +1,10 @@
 /* Polygon Object Module Description */
+#include <Python.h>
 
-#include "../includes/polygon.h"
+#include "../include/polygon.h"
 #include <structmember.h>
 #include "clinic/polygonobject.c.h"
-#include "../includes/_math.h"
+#include "../include/c/_math.h"
 
 /*[clinic input]
 module _geompy
@@ -76,7 +77,6 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
     }
 
     args_size = PyTuple_Size(args);
-
     if (args_size < 3) {
         PyErr_SetString(PyExc_TypeError,
             "Polygon should be include not less 3 points.");
@@ -102,7 +102,7 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
         if (!PyTuple_CheckExact(o)) {
             PyErr_SetString(PyExc_TypeError,
                 "Every argument should be only tuple.");
-            goto except;
+            return -1;
         }
 
         count++;
@@ -110,7 +110,7 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
         if (!_verts) {
             PyErr_SetString(PyExc_MemoryError,
                 "Malloc error.");
-            goto except;
+            return -1;
         }
 
         self->_verts = _verts;
@@ -118,7 +118,7 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
         if (!PyArg_ParseTuple(o, "dd:polygon_init", &x, &y)) { // TODO - сделать вход любых вещественных чисел из Python
             PyErr_SetString(PyExc_TypeError,
                 "Every point in polygon should be consist of 2 verticals. Every vertical should be only a real number.");
-            goto except;
+            return -1;
         }
 
         self->_verts[2 * count - 2] = x;
@@ -126,9 +126,6 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
     }
 
     return 0;
-
-except:
-    return -1;
 }
 
 /*
@@ -217,7 +214,7 @@ else cq = 3;
                                                                                             // the pseudoscalar product may be zero
 
 /*[clinic input]
-_geompy.polygon.is_inner_point
+geompy.polygon.is_inner_point
     
     point: 'O'
         Point for which we determine where it lies relative to the polygon.
@@ -233,7 +230,7 @@ else False (point lies outside the polygon).
 [clinic start generated code]*/
 
 static PyObject *
-_geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
+geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
 /*[clinic end generated code: output=891bbb7fdf805b92 input=fb1658ba75c0b44d]*/
 {
     double x;
@@ -320,7 +317,7 @@ _PyPolygon_Init(PyPolygonObject* self, PyObject* args) {
 
 PyObject*
 PyPolygon_IsInnerPoint(PyPolygonObject* self, PyObject* point) {
-    return _geompy_polygon_is_inner_point_impl(self, point);
+    return geompy_polygon_is_inner_point_impl(self, point);
 }
 
 /*

@@ -2,21 +2,21 @@
 preserve
 [clinic start generated code]*/
 
-PyDoc_STRVAR(_geompy_generate_random_polygon__doc__,
+PyDoc_STRVAR(geompy_generate_random_polygon__doc__,
 "generate_random_polygon($module, center, radius=1.0, verts_num=3, /)\n"
 "--\n"
 "\n"
 "Implementation of generate_random_polygon.");
 
-#define _GEOMPY_GENERATE_RANDOM_POLYGON_METHODDEF    \
-    {"generate_random_polygon", (PyCFunction)_geompy_generate_random_polygon, METH_FASTCALL, _geompy_generate_random_polygon__doc__},
+#define GEOMPY_GENERATE_RANDOM_POLYGON_METHODDEF    \
+    {"generate_random_polygon", (PyCFunction)geompy_generate_random_polygon, METH_FASTCALL, geompy_generate_random_polygon__doc__},
 
 static PyObject *
-_geompy_generate_random_polygon_impl(PyObject *module, PyObject *center,
+geompy_generate_random_polygon_impl(PyObject *module, PyObject *center,
                                      double radius, unsigned int verts_num);
 
 static PyObject *
-_geompy_generate_random_polygon(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
+geompy_generate_random_polygon(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
 {
     PyObject *return_value = NULL;
     PyObject *center;
@@ -27,7 +27,7 @@ _geompy_generate_random_polygon(PyObject *module, PyObject *const *args, Py_ssiz
         &PyTuple_Type, &center, &radius, &verts_num)) {
         goto exit;
     }
-    return_value = _geompy_generate_random_polygon_impl(module, center, radius, verts_num);
+    return_value = geompy_generate_random_polygon_impl(module, center, radius, verts_num);
 
 exit:
     return return_value;

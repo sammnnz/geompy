@@ -1,16 +1,16 @@
-#ifndef Py_CPYTHON_POLYGON_H
-#  error "this header file must not be included directly"
-#endif
+/* Polygon description */
 
+#ifndef Py_POLYGON_H
+#define Py_POLYGON_H
 #ifdef __cplusplus
-extern "C" {
+extern C{
 #endif
 
-#include <Python.h>
+typedef struct PyPolygonObject PyPolygonObject;
 
 struct PyPolygonObject {
 	PyObject_HEAD
-	double* _verts;
+		double* _verts;
 	PyObject* verts;
 };
 
@@ -25,17 +25,20 @@ PyAPI_DATA(PyTypeObject) PyPolygon_Type;
 #endif
 
 
-/* Public interface */
+/* Public API */
 
 PyAPI_FUNC(PyObject*) PyPolygon_New(PyTypeObject* subtype, PyObject* args, PyObject* kwargs);
 PyAPI_FUNC(PyObject*) PyPolygon_IsInnerPoint(PyPolygonObject* self, PyObject* point);
 
+/* Private API */
 
-/* Internal interface */
-
-PyAPI_FUNC(void) _PyPolygon_Dealloc(PyPolygonObject* self);
-PyAPI_FUNC(int) _PyPolygon_Init(PyPolygonObject* self, PyObject* args);
+#ifndef Py_LIMITED_API
+#  define Py_CPYTHON_POLYGON_H
+#  include  "cpython/polygon.h"
+#  undef Py_CPYTHON_POLYGON_H
+#endif
 
 #ifdef __cplusplus
 }
 #endif
+#endif // !Py_POLYGON_H

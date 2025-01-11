@@ -2,7 +2,7 @@
 preserve
 [clinic start generated code]*/
 
-PyDoc_STRVAR(_geompy_polygon_is_inner_point__doc__,
+PyDoc_STRVAR(geompy_polygon_is_inner_point__doc__,
 "is_inner_point($self, /, point)\n"
 "--\n"
 "\n"
@@ -19,13 +19,13 @@ PyDoc_STRVAR(_geompy_polygon_is_inner_point__doc__,
 "else False (point lies outside the polygon).");
 
 #define _GEOMPY_POLYGON_IS_INNER_POINT_METHODDEF    \
-    {"is_inner_point", (PyCFunction)_geompy_polygon_is_inner_point, METH_FASTCALL|METH_KEYWORDS, _geompy_polygon_is_inner_point__doc__},
+    {"is_inner_point", (PyCFunction)geompy_polygon_is_inner_point, METH_FASTCALL|METH_KEYWORDS, geompy_polygon_is_inner_point__doc__},
 
 static PyObject *
-_geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point);
+geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point);
 
 static PyObject *
-_geompy_polygon_is_inner_point(PyPolygonObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
+geompy_polygon_is_inner_point(PyPolygonObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
 {
     PyObject *return_value = NULL;
     static const char * const _keywords[] = {"point", NULL};
@@ -36,7 +36,7 @@ _geompy_polygon_is_inner_point(PyPolygonObject *self, PyObject *const *args, Py_
         &point)) {
         goto exit;
     }
-    return_value = _geompy_polygon_is_inner_point_impl(self, point);
+    return_value = geompy_polygon_is_inner_point_impl(self, point);
 
 exit:
     return return_value;
