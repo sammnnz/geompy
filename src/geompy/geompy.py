@@ -49,7 +49,7 @@ class Render(object):
                   Points to create a plot.
         :param c: string with color, default: 'red'
                   The color that the points will be drawn with.
-        :param s: integer, float or array-like, default: 40
+        :param s: integer, float or tuple of integer or float numbers, default: 40
                   Size of points.
         """
         arr = np.array(points)
