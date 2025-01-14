@@ -27,8 +27,10 @@ PyAPI_DATA(PyTypeObject) PyPolygon_Type;
 
 /* Public API */
 
-PyAPI_FUNC(PyObject*) PyPolygon_New(PyTypeObject* subtype, PyObject* args, PyObject* kwargs);
+PyAPI_FUNC(int)       PyPolygon_Init(PyPolygonObject* self, PyObject* args);
+PyAPI_FUNC(PyObject*) PyPolygon_New(void);
 PyAPI_FUNC(PyObject*) PyPolygon_IsInnerPoint(PyPolygonObject* self, PyObject* point);
+
 
 /* Private API */
 

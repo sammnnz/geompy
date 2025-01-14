@@ -7,7 +7,6 @@ extern "C" {
 #endif
 
 PyAPI_FUNC(void) _PyPolygon_Dealloc(PyPolygonObject* self);
-PyAPI_FUNC(int) _PyPolygon_Init(PyPolygonObject* self, PyObject* args);
 
 #ifdef __cplusplus
 }

@@ -6,7 +6,7 @@ extern "C" {
 
 /* Public API */
 
-PyAPI_FUNC(PyObject*) GeomPy_GenerateRandomPolygon(PyObject* module, PyObject* center, double radius, unsigned int verts_num);
+PyAPI_FUNC(PyObject*) Geompy_GenerateRandomPolygon(PyObject* module, PyObject* center, double radius, unsigned int verts_num);
 
 
 /* Private API */

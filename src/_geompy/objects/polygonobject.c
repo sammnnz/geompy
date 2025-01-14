@@ -16,7 +16,7 @@ PyDoc_STRVAR(polygon_doc,
     "Polygon object class.\n\
 \n\
 Typical use:\n\
->>> polygon((1, 2, 3), (4, 5, 6), (7, 8, 9))");
+>>> polygon((1, 2), (4, 5), (7, 8))");
 
 #define NonPy_CLEAR(op) \
     if (op != NULL) {   \
@@ -63,13 +63,11 @@ polygon_dealloc(PyPolygonObject* self) {
 */
 static int
 polygon_init(PyPolygonObject* self, PyObject* args) {
-    double x;
-    double y;
+    double x, y;
     double* _verts;
-    Py_ssize_t args_size;
-    Py_ssize_t count;
+    Py_ssize_t args_size, count;
 
-    if (!PyTuple_CheckExact(args)) { // TODO - уточнить может ли приходить другой тип или нет (возможно данная проверка не нужна)
+    if (!PyTuple_CheckExact(args)) {
         PyErr_SetString(PyExc_TypeError,
             "Invalid arguments.");
 
@@ -115,7 +113,7 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
 
         self->_verts = _verts;
 
-        if (!PyArg_ParseTuple(o, "dd:polygon_init", &x, &y)) { // TODO - сделать вход любых вещественных чисел из Python
+        if (!PyArg_ParseTuple(o, "dd:polygon_init", &x, &y)) {
             PyErr_SetString(PyExc_TypeError,
                 "Every point in polygon should be consist of 2 verticals. Every vertical should be only a real number.");
             return -1;
@@ -233,18 +231,17 @@ static PyObject *
 geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
 /*[clinic end generated code: output=891bbb7fdf805b92 input=fb1658ba75c0b44d]*/
 {
-    double x;
-    double y;
+    double x, y;
     double* _verts;
     short wnum; // winding number
-    unsigned short curr_qdrnt = NULL;
+    unsigned short curr_qdrnt  = NULL;
     unsigned short first_qdrnt = NULL;
-    unsigned short prev_qdrnt = NULL;
+    unsigned short prev_qdrnt  = NULL;
     Py_ssize_t po_size;
 
-    if (!self->_verts && !self->verts) {
+    if (!self->_verts || !self->verts) {
         PyErr_SetString(PyExc_TypeError,
-            "null polygon object");
+            "Null polygon object.");
 
         return NULL;
     }
@@ -252,7 +249,7 @@ geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
     po_size = PyTuple_Size(self->verts);
     if (po_size < 3) {
         PyErr_SetString(PyExc_TypeError,
-            "polygon must contain at least 3 vertices");
+            "Polygon must contain >= 3 vertices.");
 
         return NULL;
     }
@@ -260,7 +257,7 @@ geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
 
     if (!PyArg_ParseTuple(point, "dd:is_inner_point", &x, &y)) {
         PyErr_SetString(PyExc_TypeError,
-            "argument parse error");
+            "Argument parse error.");
 
         return NULL;
     }
@@ -292,22 +289,9 @@ geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
     Py_RETURN_FALSE; // outside case (wnum = 0)
 }
 
-/*
-* Polygon dealloc function for debug tests
-*/
-void
-_PyPolygon_Dealloc(PyPolygonObject* self) {
-    if (PyPolygon_CheckExact(self)) {
-        polygon_dealloc(self);
-    }
-};
-
-/*
-* Polygon init function for debug tests
-*/
 int
-_PyPolygon_Init(PyPolygonObject* self, PyObject* args) {
-    if (!PyPolygon_CheckExact(self)) {
+PyPolygon_Init(PyPolygonObject* self, PyObject* args) {
+    if (self->_verts != NULL || self->verts != NULL) {
         return -1;
     }
 
@@ -316,17 +300,25 @@ _PyPolygon_Init(PyPolygonObject* self, PyObject* args) {
 };
 
 PyObject*
+PyPolygon_New(void) {
+    return polygon_new(&PyPolygon_Type, NULL, NULL);
+}
+
+PyObject*
 PyPolygon_IsInnerPoint(PyPolygonObject* self, PyObject* point) {
+    double x, y;
+
+    if (!PyArg_ParseTuple(point, "dd:PyPolygon_IsInnerPoint", &x, &y)) {
+        return NULL;
+    }
+
     return geompy_polygon_is_inner_point_impl(self, point);
 }
 
-/*
-* Public interface function polygon_new
-*/
-PyObject*
-PyPolygon_New(PyTypeObject* subtype, PyObject* args, PyObject* kwargs) {
-    return polygon_new(subtype, args, kwargs);
-}
+void
+_PyPolygon_Dealloc(PyPolygonObject* self) {
+    polygon_dealloc(self);
+};
 
 static PyMethodDef polygon_methods[] = {
     _GEOMPY_POLYGON_IS_INNER_POINT_METHODDEF
