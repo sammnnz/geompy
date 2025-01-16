@@ -1,5 +1,5 @@
 [run]
-omit = src/geompy/_typing.py
+omit = */geompy/_typing.py
 
 [report]
 fail_under = 80
