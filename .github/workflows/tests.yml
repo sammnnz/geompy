@@ -3,6 +3,10 @@ name: Tests
 on:
    workflow_call:
      inputs:
+       ref:
+         required: false
+         type: string
+         default: ${{github.ref_name}}
        os:
          required: true
          type: string
@@ -25,6 +29,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: sammnnz/geompy
+          ref: ${{inputs.ref}}
       - name: Setup Python ${{inputs.py}}
         uses: actions/setup-python@v2
         with:
