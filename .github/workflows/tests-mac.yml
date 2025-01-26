@@ -1,0 +1,25 @@
+name: Tests-mac
+
+on:
+   pull_request:
+     branches: [main, release-*, develop, fe-*]
+     types: [opened, reopened]
+   workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+        py: [3.7, 3.8, 3.9, "3.10"]
+        exclude:
+          - os: macos-latest
+            py: "3.7"
+        include:
+          - os: macos-13
+            py: "3.7.17"
+    uses: ./.github/workflows/tests.yml
+    with:
+        os: ${{matrix.os}}
+        py: ${{matrix.py}}
