@@ -142,7 +142,7 @@ geompy_generate_random_polygon_impl(PyObject *module, PyObject *center,
 
 	free(polars);
 	polygon = PyPolygon_New();
-	PyPolygon_Init(polygon, args);
+	PyPolygon_Init((PyPolygonObject*)polygon, args);
 
 	return polygon;
 

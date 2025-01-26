@@ -191,9 +191,7 @@ static PyMemberDef polygon_members[] = {
     {NULL}
 };
 
-#define QUADRANT_NUM(verts, cq, x, y) \
-if (verts == NULL) return NULL; \
-if (verts + 1 == NULL) return NULL; \
+#define QUADRANT_NUM(verts, cq, x, y) /* warning: not safe for verts*/ \
 if (*verts == x && *(verts + 1) == y) Py_RETURN_TRUE; /* vertical case */ \
 if (*verts > x && *(verts + 1) >= y) cq = 0; \
 else if (*_verts <= x && *(_verts + 1) > y) cq = 1; \
@@ -234,9 +232,7 @@ geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
     double x, y;
     double* _verts;
     short wnum; // winding number
-    unsigned short curr_qdrnt  = NULL;
-    unsigned short first_qdrnt = NULL;
-    unsigned short prev_qdrnt  = NULL;
+    unsigned short curr_qdrnt, first_qdrnt, prev_qdrnt;
     Py_ssize_t po_size;
 
     if (!self->_verts || !self->verts) {
@@ -264,6 +260,9 @@ geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
 
     _verts = self->_verts;
     wnum = 0;
+    curr_qdrnt = 0;
+    first_qdrnt = 0;
+    prev_qdrnt = 0;
     QUADRANT_NUM(_verts, first_qdrnt, x, y);
     prev_qdrnt = first_qdrnt;
     po_size--;
