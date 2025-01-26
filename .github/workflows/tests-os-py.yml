@@ -1,0 +1,97 @@
+name: Tests (single OS and single PY)
+
+on:
+   workflow_dispatch:
+     inputs:
+       os:
+         required: true
+         type: choice
+         default: 'windows-latest'
+         options:
+         # https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#standard-github-hosted-runners-for-public-repositories
+         - ubuntu-latest
+         - ubuntu-24.04
+         - ubuntu-22.04
+         - ubuntu-20.04
+         - windows-latest
+         - windows-2025
+         - windows-2022
+         - windows-2019
+         - ubuntu-24.04-arm
+         - ubuntu-22.04-arm
+         - macos-13
+         - macos-latest
+         - macos-14
+         - macos-15
+       py:
+         required: true
+         type: choice
+         default: '3.9'
+         options:
+         - '3.7'
+         - '3.8'
+         - '3.9'
+         - '3.10'
+       lint:
+         required: false
+         type: choice
+         default: 'false'
+         options:
+         - 'true'
+         - 'false'
+       typecheck:
+         required: false
+         type: choice
+         default: 'false'
+         options:
+         - 'true'
+         - 'false'
+
+jobs:
+  pre:
+   runs-on: ubuntu-latest
+   steps:
+      - id: lint
+        run: |
+             if [ ${{inputs.lint}} == 'true' ]; then
+               echo "value=true" >> $GITHUB_OUTPUT
+             elif [ ${{inputs.lint}} == 'false' ]; then
+               echo "value=" >> $GITHUB_OUTPUT
+             else
+               echo "Invalid argument: lint must be true or false."
+               exit 1
+             fi
+        shell: bash
+      - id: typecheck
+        run: |
+             if [ ${{inputs.typecheck}} == 'true' ]; then
+               echo "value=true" >> $GITHUB_OUTPUT
+             elif [ ${{inputs.typecheck}} == 'false' ]; then
+               echo "value=" >> $GITHUB_OUTPUT
+             else
+               echo "Invalid argument: lint must be true or false."
+               exit 1
+             fi
+        shell: bash
+
+   outputs:
+      lint: ${{ steps.lint.outputs.value }}
+      typecheck: ${{ steps.typecheck.outputs.value }}
+
+  tests-call:
+     needs: pre
+     uses: ./.github/workflows/tests.yml
+     with:
+       ref: ${{inputs.ref}}
+       os: ${{inputs.os}}
+       py: ${{inputs.py}}
+       lint: ${{needs.pre.outputs.lint}}
+       typecheck: ${{needs.pre.outputs.typecheck}}
+
+  # _echo:
+  #    needs: pre
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #       - run: |
+  #          echo "${{needs.pre.outputs.lint}}"
+  #          echo "${{needs.pre.outputs.typecheck}}"
