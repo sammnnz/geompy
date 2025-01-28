@@ -86,6 +86,8 @@ jobs:
        py: ${{inputs.py}}
        lint: ${{needs.pre.outputs.lint}}
        typecheck: ${{needs.pre.outputs.typecheck}}
+     secrets:
+       token: ${{secrets.GITHUB_TOKEN}}
 
   # _echo:
   #    needs: pre
