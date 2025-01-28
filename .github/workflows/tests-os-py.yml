@@ -82,7 +82,6 @@ jobs:
      needs: pre
      uses: ./.github/workflows/tests.yml
      with:
-       ref: ${{inputs.ref}}
        os: ${{inputs.os}}
        py: ${{inputs.py}}
        lint: ${{needs.pre.outputs.lint}}
