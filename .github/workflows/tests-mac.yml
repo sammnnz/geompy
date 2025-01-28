@@ -23,3 +23,5 @@ jobs:
     with:
         os: ${{matrix.os}}
         py: ${{matrix.py}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}

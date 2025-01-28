@@ -29,3 +29,5 @@ jobs:
         py: ${{matrix.py}}
         lint: ${{matrix.lint}}
         typecheck: ${{matrix.typecheck}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
