@@ -40,12 +40,20 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r dev-requirements.txt
-          pip install -e .
+          pip install .[testing,linting,typechecking]
       - name: Test with pytest
         run: |
-          pytest --cov-config=.coveragerc --verbose --color=yes --cov-append --assert=plain
-          coverage xml
+          pytest --cov-config=.coveragerc --verbose --color=yes --assert=plain
+      - name: Change '.coverage' file name
+        run: |
+          mv .coverage/coverage.-1 .coverage/coverage-${{inputs.os}}-py${{inputs.py}}.-1
+        shell: bash
+      - name: Upload coverage artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: geompy-cov-${{inputs.os}}-py${{inputs.py}}
+          overwrite: true
+          path: .coverage/coverage-${{inputs.os}}-py${{inputs.py}}.-1
       - name: Linter
         if: ${{inputs.lint}}
         run: |
