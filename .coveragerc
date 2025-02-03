@@ -1,5 +1,4 @@
 [run]
-data_file = ./.coverage/coverage.-1
 omit = */geompy/_typing.py
 
 [report]

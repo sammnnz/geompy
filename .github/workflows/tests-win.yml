@@ -1,0 +1,21 @@
+name: Tests-win
+
+on:
+   pull_request:
+     branches: [main, release-*, develop, fe-*]
+     types: [opened, reopened]
+   workflow_dispatch:
+
+jobs:
+  tests-call:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        py: [3.7, 3.8, 3.9, "3.10"]
+    uses: ./.github/workflows/tests.yml
+    with:
+        os: ${{matrix.os}}
+        py: ${{matrix.py}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}

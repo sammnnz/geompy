@@ -1,7 +1,7 @@
 # GeomPy
 [![license](https://img.shields.io/badge/License-APACHE_2.0-blue.svg)](http://www.apache.org/licenses/)
-![Tests](https://github.com/sammnnz/GeomPy/actions/workflows/tests.yml/badge.svg)
-[![codecov](https://codecov.io/gh/sammnnz/GeomPy/branch/master/graph/badge.svg?token=64XGVB6FSV)](https://codecov.io/gh/sammnnz/GeomPy)
+![Tests](https://github.com/sammnnz/GeomPy/actions/workflows/tests-ub.yml/badge.svg)
+[![coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-cov-develop.json)](https://codecov.io/gh/sammnnz/GeomPy)
 
 Python/C API library for geometry calculations.
 
