@@ -88,11 +88,3 @@ jobs:
        typecheck: ${{needs.pre.outputs.typecheck}}
      secrets:
        token: ${{secrets.GITHUB_TOKEN}}
-
-  # _echo:
-  #    needs: pre
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #       - run: |
-  #          echo "${{needs.pre.outputs.lint}}"
-  #          echo "${{needs.pre.outputs.typecheck}}"

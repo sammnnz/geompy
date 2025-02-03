@@ -7,7 +7,7 @@ on:
    workflow_dispatch:
 
 jobs:
-  test:
+  tests-call:
     strategy:
       fail-fast: false
       matrix:
@@ -18,7 +18,7 @@ jobs:
             py: "3.7"
         include:
           - os: macos-13
-            py: "3.7.17"
+            py: "3.7"
     uses: ./.github/workflows/tests.yml
     with:
         os: ${{matrix.os}}
