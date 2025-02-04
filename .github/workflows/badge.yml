@@ -21,6 +21,8 @@ on:
     secrets:
       token:
         required: true
+      badge_gist_token:
+        required: true
 
 jobs:
   badge:
@@ -43,7 +45,7 @@ jobs:
       - name: Create 'tests passed' badge
         uses: schneegans/dynamic-badges-action@v1.0.0
         with:
-          auth: ${{ secrets.BADGE_GIST_TOKEN }}
+          auth: ${{ secrets.badge_gist_token }}
           gistID: 8785eb132e71830a74e34901b704e0e9
           filename: geompy-test-${{inputs.flag}}-${{github.ref_name}}.json
           label: ${{inputs.label}}

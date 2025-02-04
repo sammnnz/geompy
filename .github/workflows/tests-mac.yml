@@ -37,3 +37,4 @@ jobs:
       result: ${{needs.tests-call.result}}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
+      badge_gist_token: ${{ secrets.BADGE_GIST_TOKEN }}
