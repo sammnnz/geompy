@@ -1,20 +1,22 @@
 /*
 * GeomPy Module Description
 */
-#include "_geompy.h"
-#include "includes/polygon.h"
-#include "includes/rand.h"
+#include <Python.h>
 #include <math.h>
 #include <stdlib.h>
-#include "clinic/_geompy.c.h"
-#include "includes/_math.h"
+#include <time.h>
+
+#include "include/geompy.h"
+#include "include/polygon.h"
+#include "clinic/geompy.c.h"
+#include "include/c/_math.h"
 
 /*[clinic input]
 module _geompy
 [clinic start generated code]*/
 /*[clinic end generated code: output=da39a3ee5e6b4b0d input=47d63e40a3369661]*/
 
-static int _grp_Compare(const void* a, const void* b)
+static int grp_Compare(const void* a, const void* b)
 {
 	double** a_;
 	double** b_;
@@ -30,7 +32,7 @@ static int _grp_Compare(const void* a, const void* b)
 	return **a_ > **b_ ? 1 : -1;
 };
 
-#define _GRP_MEMORY_CLEAR(i, list) \
+#define GRP_MEMORY_CLEAR(i, list) \
 	while (i) { \
 		i--; \
 		free(list[i]); \
@@ -38,11 +40,15 @@ static int _grp_Compare(const void* a, const void* b)
 	\
 	free(list);
 
-#define _GRP_MOD180_DEGREES(d) \
+#define GRP_MOD180_DEGREES(d) \
 	(d < 180.0 ? d : d - 180.0)
 
+#ifndef M_PI
+#	define M_PI 3.14159265358979323846   // pi
+#endif
+
 /*[clinic input]
-_geompy.generate_random_polygon
+geompy.generate_random_polygon
 
     center: object(subclass_of='&PyTuple_Type')
     radius: double = 1.0
@@ -53,31 +59,28 @@ Implementation of generate_random_polygon.
 
 [clinic start generated code]*/
 
-static PyObject*
-_geompy_generate_random_polygon_impl(PyObject* module, PyObject* center,
-	double radius, unsigned int verts_num)
-	/*[clinic end generated code: output=7cb2ffc9bfb2bd4d input=49274a8864cba512]*/
+static PyObject *
+geompy_generate_random_polygon_impl(PyObject *module, PyObject *center,
+                                     double radius, unsigned int verts_num)
+/*[clinic end generated code: output=7cb2ffc9bfb2bd4d input=49274a8864cba512]*/
 {
-	double x;
-	double y;
+	double x, y;
 	double** polars;
 	unsigned short indicator;
 	unsigned int vnum;
 	PyObject* args;
 	PyObject* polygon;
-	PyObject* tmp_list;
-	PyObject* tmp_tuple;
 
 	if (verts_num < 3) {
 		PyErr_SetString(PyExc_TypeError,
-			"verts_num must be greater than or equal to three");
+			"verts_num must be >= 3");
 
 		return NULL;
 	}
 
 	if (!PyArg_ParseTuple(center, "dd:generate_random_polygon", &x, &y)) {
 		PyErr_SetString(PyExc_TypeError,
-			"argument parse error");
+			"Argument parse error: center must be 2d point.");
 
 		return NULL;
 	}
@@ -88,22 +91,23 @@ _geompy_generate_random_polygon_impl(PyObject* module, PyObject* center,
 	}
 
 	indicator = 1;
+	srand(time(NULL));
 	for (unsigned int ui = 0; ui < verts_num; ui++) {
 		polars[ui] = (double*)malloc(sizeof(double) * 2);
 		if (!polars[ui]) {
-			_GRP_MEMORY_CLEAR(ui, polars)
+			GRP_MEMORY_CLEAR(ui, polars)
 			goto memory_failed;
 		}
 
-		polars[ui][0] = random_angle(0);
-		polars[ui][1] = random(0, radius);
+		polars[ui][0] = 2.0 * M_PI * ((double)rand() / RAND_MAX);
+		polars[ui][1] = radius * ((double)rand() / RAND_MAX);
 
 		// if there are at least three points that 
 		// do not lie on the same straight line, 
 		// then the indicator will become equal to 0
 		if (indicator && ui > 1) {
-			if (_GRP_MOD180_DEGREES(polars[ui][0]) == _GRP_MOD180_DEGREES(polars[ui - 1][0])) {
-				if (_GRP_MOD180_DEGREES(polars[ui][0]) != _GRP_MOD180_DEGREES(polars[ui - 2][0])) {
+			if (GRP_MOD180_DEGREES(polars[ui][0]) == GRP_MOD180_DEGREES(polars[ui - 1][0])) {
+				if (GRP_MOD180_DEGREES(polars[ui][0]) != GRP_MOD180_DEGREES(polars[ui - 2][0])) {
 					indicator = 0;
 				}
 			}
@@ -123,63 +127,56 @@ _geompy_generate_random_polygon_impl(PyObject* module, PyObject* center,
 
 	if (indicator) {
 		vnum = verts_num;
-		_GRP_MEMORY_CLEAR(vnum, polars)
-		return _geompy_generate_random_polygon_impl(module, center, radius, verts_num);
+		GRP_MEMORY_CLEAR(vnum, polars)
+		return geompy_generate_random_polygon_impl(module, center, radius, verts_num);
 	}
 	
-	qsort(polars, verts_num, sizeof(double*), _grp_Compare);
-	tmp_list = Py_BuildValue("[]");
+	qsort(polars, verts_num, sizeof(double*), grp_Compare);
+	args = PyTuple_New(verts_num);
 	while (verts_num) {
 		verts_num--;
-
-		PyList_Append(tmp_list, Py_BuildValue("(dd)", 
+		PyTuple_SetItem(args, verts_num, Py_BuildValue("(dd)",
 			x + polars[verts_num][1] * cos(polars[verts_num][0]), y + polars[verts_num][1] * sin(polars[verts_num][0])));
-
 		free(polars[verts_num]);
 	};
 
 	free(polars);
-	args = PyList_AsTuple(tmp_list);
-	Py_DECREF(tmp_list);
-	tmp_tuple = Py_BuildValue("()");
-	polygon = PyPolygon_New(&PyPolygon_Type, tmp_tuple, tmp_tuple);
-	_PyPolygon_Init(polygon, args);
-	Py_DECREF(args);
-	Py_DECREF(tmp_tuple);
+	polygon = PyPolygon_New();
+	PyPolygon_Init((PyPolygonObject*)polygon, args);
 
 	return polygon;
 
 memory_failed:
 	PyErr_SetString(PyExc_MemoryError,
-		"malloc error");
+		"Malloc error.");
 
 	return NULL;
 };
 
 PyObject*
-GeomPy_GenRandomPolygon(PyObject* module, PyObject* center, double radius, unsigned int verts_num) {
-	return _geompy_generate_random_polygon_impl(module, center, radius, verts_num);
+Geompy_GenerateRandomPolygon(PyObject* module, PyObject* center, double radius, unsigned int verts_num) {
+	return geompy_generate_random_polygon_impl(module, center, radius, verts_num);
 };
 
-PyDoc_STRVAR(_geompy__doc__,
-	"GeomPy: Python/C API module for geometric calculations");
+PyDoc_STRVAR(geompy__doc__,
+	"_geompy: Python/C API module for geometric calculations");
 
-static PyMethodDef _geompy_methods[] = {
-	_GEOMPY_GENERATE_RANDOM_POLYGON_METHODDEF
+static PyMethodDef geompy_methods[] = {
+	GEOMPY_GENERATE_RANDOM_POLYGON_METHODDEF
 	{NULL, NULL, 0, NULL}
 };
 
-static struct PyModuleDef _geompy_module = {
+static struct PyModuleDef geompy_module = {
 	PyModuleDef_HEAD_INIT,
 	"_geompy",
-	_geompy__doc__,
+	geompy__doc__,
 	-1,
-	_geompy_methods
+	geompy_methods
 };
 
 PyMODINIT_FUNC
 PyInit__geompy(void) {
-	PyObject* module = PyModule_Create(&_geompy_module);
+	PyObject* module = PyModule_Create(&geompy_module);
 
 	if (PyType_Ready(&PyPolygon_Type) < 0) {
 		Py_XDECREF(module);

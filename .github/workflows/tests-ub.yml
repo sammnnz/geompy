@@ -1,0 +1,134 @@
+name: Tests-ub
+
+on:
+   pull_request:
+     branches: [main, release-*, develop, fe-*]
+     types: [opened, reopened]
+   workflow_dispatch:
+     inputs:
+       codecov:
+         required: false
+         type: choice
+         default: 'true'
+         options:
+           - 'true'
+           - 'false'
+       cov-badge:
+         required: false
+         type: choice
+         default: 'true'
+         options:
+           - 'true'
+           - 'false'
+
+jobs:
+  tests-call:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        py: [3.7, 3.8, 3.9, "3.10"]
+        codecov: ["${{inputs.codecov}}"]
+        cov-json: ["${{inputs.cov-badge}}"]
+        exclude:
+          - os: ubuntu-latest
+            py: "3.7"
+            codecov: "${{inputs.codecov}}"
+            cov-json: "${{inputs.cov-badge}}"
+        include:
+          - os: ubuntu-22.04
+            py: "3.7"
+            codecov: "${{inputs.codecov}}"
+            cov-json: "${{inputs.cov-badge}}"
+          - os: ubuntu-latest
+            py: "3.9"
+            lint: "true"
+            typecheck: "true"
+            codecov: "${{inputs.codecov}}"
+            cov-json: "${{inputs.cov-badge}}"
+    uses: ./.github/workflows/tests.yml
+    with:
+        os: ${{matrix.os}}
+        py: ${{matrix.py}}
+        lint: ${{matrix.lint}}
+        typecheck: ${{matrix.typecheck}}
+        codecov: ${{matrix.codecov}}
+        cov-json: ${{matrix.cov-json}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}
+
+  badge:
+    needs: tests-call
+    uses: ./.github/workflows/badge.yml
+    with:
+      flag: 'ubuntu'
+      label: 'tests'
+      message: 'passed'
+      named-logo: 'linux'
+      result: ${{needs.tests-call.result}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      badge_gist_token: ${{ secrets.BADGE_GIST_TOKEN }}
+
+  coverage-badge:
+    continue-on-error: true
+    if: ${{inputs.cov-badge}} == 'true'
+    needs: tests-call
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download coverage artefact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          merge-multiple: true
+          path: .temp
+          pattern: geompy-cov-*
+      - name: Install dependencies (bc, jq)
+        run: |
+          sudo apt-get install bc
+          sudo apt-get install jq
+        shell: bash
+      - name: Calculate coverage and color
+        run: |
+          covered_lines=0
+          num_statements=0
+          for file in `find .temp -type f`; do
+            covered_lines="$covered_lines + `jq ".covered_lines" $file`"
+            covered_lines=$(bc<<<"scale=0;$covered_lines")
+            num_statements="$num_statements + `jq ".num_statements" $file`"
+            num_statements=$(bc<<<"scale=0;$num_statements")
+          done
+          coverage=$(bc<<<"scale=0;100*$covered_lines/$num_statements")
+          echo "COVERAGEMESSAGE=$coverage" >> $GITHUB_ENV
+          fail_under=`sed -rn 's/.*fail_under\s*=\s*(\w*).*/\1/p' .coveragerc`
+          if (( "$coverage" >= "$fail_under" )); then
+            echo "COVERAGECOLOR=green" >> $GITHUB_ENV
+          else
+            echo "COVERAGECOLOR=red" >> $GITHUB_ENV
+          fi
+        shell: bash
+      # https://dev.to/thejaredwilcurt/coverage-badge-with-github-actions-finally-59fa
+      - name: Create coverage badge
+        uses: schneegans/dynamic-badges-action@v1.0.0
+        with:
+          auth: ${{ secrets.BADGE_GIST_TOKEN }}
+          gistID: 8785eb132e71830a74e34901b704e0e9
+          filename: geompy-cov-${{github.ref_name}}.json
+          label: coverage
+          message: ${{ env.COVERAGEMESSAGE }}%
+          color: ${{ env.COVERAGECOLOR }}
+          namedLogo: codecov
+
+  post:
+    needs: coverage-badge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete coverage artefact
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          failOnError: false
+          name: |
+            geompy-cov-*

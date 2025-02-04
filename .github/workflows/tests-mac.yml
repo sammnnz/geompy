@@ -1,0 +1,40 @@
+name: Tests-mac
+
+on:
+   pull_request:
+     branches: [main, release-*, develop, fe-*]
+     types: [opened, reopened]
+   workflow_dispatch:
+
+jobs:
+  tests-call:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+        py: [3.7, 3.8, 3.9, "3.10"]
+        exclude:
+          - os: macos-latest
+            py: "3.7"
+        include:
+          - os: macos-13
+            py: "3.7"
+    uses: ./.github/workflows/tests.yml
+    with:
+        os: ${{matrix.os}}
+        py: ${{matrix.py}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
+  badge:
+    needs: tests-call
+    uses: ./.github/workflows/badge.yml
+    with:
+      flag: 'mac'
+      label: 'tests'
+      message: 'passed'
+      named-logo: 'apple'
+      result: ${{needs.tests-call.result}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      badge_gist_token: ${{ secrets.BADGE_GIST_TOKEN }}

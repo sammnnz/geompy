@@ -1,0 +1,7 @@
+pytest==7.4.4;
+pytest-cov==4.1.0;
+coverage==7.2.7;
+flake8==5.0.4;
+mypy==1.4.1;
+codecov==2.1.13; python_version~="3.7"
+codecov-cli==0.3.0; python_version>="3.8"

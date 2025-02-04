@@ -1,47 +1,61 @@
 /* Polygon Object Module Description */
+#include <Python.h>
 
-#include "../includes/polygon.h"
+#include "../include/polygon.h"
 #include <structmember.h>
 #include "clinic/polygonobject.c.h"
-#include "../includes/_math.h"
+#include "../include/c/_math.h"
 
 /*[clinic input]
-class polygon "PyPolygonObject *" "&PyPolygon_Type"
+module _geompy
+class _geompy.polygon "PyPolygonObject *" "&PyPolygon_Type"
 [clinic start generated code]*/
-/*[clinic end generated code: output=da39a3ee5e6b4b0d input=afa59843565ccc12]*/
+/*[clinic end generated code: output=da39a3ee5e6b4b0d input=3b980588babc08e9]*/
 
 PyDoc_STRVAR(polygon_doc,
-    "polygon((1, 2, 3), (4, 5, 6), (7, 8, 9))\n\
+    "Polygon object class.\n\
 \n\
-Create a polygon object.");
+Typical use:\n\
+>>> polygon((1, 2), (4, 5), (7, 8))");
 
-#define NONPy_CLEAR(op) \
-    free(op); \
-    op = NULL;
+#define NonPy_CLEAR(op) \
+    if (op != NULL) {   \
+        free(op);       \
+        op = NULL;      \
+    }                   \
 
 /*
 * Clear attributes ( use when PyPolygon_Type include Py_TPFLAGS_HAVE_GC flag )
 */
 static int
 polygon_clear(PyPolygonObject* self) {
-    NONPy_CLEAR(self->_verts);
+    NonPy_CLEAR(self->_verts);
     Py_CLEAR(self->verts);
     return 0;
 }
+
+/* Look like mypy */
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
+#  define CPy_TRASHCAN_BEGIN(op, dealloc) Py_TRASHCAN_BEGIN(op, dealloc)
+#  define CPy_TRASHCAN_END(op) Py_TRASHCAN_END
+#else
+#  define CPy_TRASHCAN_BEGIN(op, dealloc) Py_TRASHCAN_SAFE_BEGIN(op)
+#  define CPy_TRASHCAN_END(op) Py_TRASHCAN_SAFE_END(op)
+#endif
 
 /*
 * Destroy PyPolygonObject
 */
 static void
 polygon_dealloc(PyPolygonObject* self) {
-    Py_TRASHCAN_BEGIN(self, polygon_dealloc);
+    CPy_TRASHCAN_BEGIN(self, polygon_dealloc)
 
     PyObject_GC_UnTrack(self);
-    NONPy_CLEAR(self->_verts);
+    NonPy_CLEAR(self->_verts);
     Py_CLEAR(self->verts);
     PyObject_GC_Del(self);
 
-    Py_TRASHCAN_END;
+    CPy_TRASHCAN_END(self)
 }
 
 /*
@@ -49,81 +63,67 @@ polygon_dealloc(PyPolygonObject* self) {
 */
 static int
 polygon_init(PyPolygonObject* self, PyObject* args) {
-    double x;
-    double y;
+    double x, y;
     double* _verts;
-    Py_ssize_t a_size;
-    Py_ssize_t i;
-    PyObject* tmp_list = NULL;
-    PyObject* tmp_tuple = NULL;
-    PyObject* verts;
+    Py_ssize_t args_size, count;
 
     if (!PyTuple_CheckExact(args)) {
+        PyErr_SetString(PyExc_TypeError,
+            "Invalid arguments.");
+
         return -1;
     }
 
-    a_size = PyTuple_Size(args);
-    self->_verts = (double*)malloc(sizeof(double) * 2);
-    if (!self->_verts) {
-        goto memory_failed;
+    args_size = PyTuple_Size(args);
+    if (args_size < 3) {
+        PyErr_SetString(PyExc_TypeError,
+            "Polygon should be include not less 3 points.");
+        
+        return -1;
     }
 
-    tmp_list = Py_BuildValue("[]");
-    i = 0;
-    while (a_size > i) {
-        tmp_tuple = PyTuple_GetItem(args, i);
-        if (!PyTuple_CheckExact(tmp_tuple)) {
-            free(self->_verts);
+    self->_verts = (double*)malloc(sizeof(double) * 2);
+    if (!self->_verts) {
+        PyErr_SetString(PyExc_MemoryError,
+            "Malloc error.");
 
-            if (i < 2) {
-                goto parse_failed;
-            }
+        return -1;
+    }
 
-            break;
+    self->verts = PyTuple_New(args_size);
+    count = 0;
+    while (count < args_size) {
+        PyObject* o;
+        o = PyTuple_GetItem(args, count);
+        PyTuple_SetItem(self->verts, count, o);
+        Py_INCREF(o);
+        if (!PyTuple_CheckExact(o)) {
+            PyErr_SetString(PyExc_TypeError,
+                "Every argument should be only tuple.");
+            return -1;
         }
 
-        i++;
-        _verts = (double*)realloc(self->_verts, sizeof(double) * 2 * i);
+        count++;
+        _verts = (double*)realloc(self->_verts, sizeof(double) * 2 * count);
         if (!_verts) {
-            goto memory_failed;
+            PyErr_SetString(PyExc_MemoryError,
+                "Malloc error.");
+            return -1;
         }
 
         self->_verts = _verts;
 
-        if (!PyArg_ParseTuple(tmp_tuple, "dd:polygon_init", &x, &y)) {
-            free(self->_verts);
-            goto parse_failed;
+        if (!PyArg_ParseTuple(o, "dd:polygon_init", &x, &y)) {
+            PyErr_SetString(PyExc_TypeError,
+                "Every point in polygon should be consist of 2 verticals. Every vertical should be only a real number.");
+            return -1;
         }
 
-        self->_verts[2 * i - 2] = x;
-        self->_verts[2 * i - 1] = y;
-        PyList_Append(tmp_list, tmp_tuple);
+        self->_verts[2 * count - 2] = x;
+        self->_verts[2 * count - 1] = y;
     }
 
-    if (i < 3) {
-        free(self->_verts);
-        goto parse_failed;
-    }
-
-    verts = PyList_AsTuple(tmp_list);
-    self->verts = verts;
-
-    Py_DECREF(tmp_list);
     return 0;
-
-memory_failed:
-    Py_XDECREF(tmp_list);
-    PyErr_SetString(PyExc_MemoryError,
-        "malloc error");
-
-    return -1;
-
-parse_failed:
-    Py_DECREF(tmp_list);
-    PyErr_SetString(PyExc_TypeError,
-        "argument parse error");
-
-    return -1;
 }
 
 /*
@@ -149,7 +149,6 @@ polygon_new(PyTypeObject* subtype, PyObject* args, PyObject* kwargs) {
 static int
 polygon_traverse(PyPolygonObject* self, visitproc visit, void* arg)
 {
-    //Py_VISIT(self->_verts);
     Py_VISIT(self->verts);
     return 0;
 }
@@ -168,7 +167,7 @@ polygon_subscript(PyPolygonObject* self, PyObject* index) {
 
     ix = PyLong_AsSsize_t(index);
     if (ix == -1 && PyErr_Occurred()) {
-        PyErr_SetString(PyExc_OverflowError, "index overflow");
+        PyErr_SetString(PyExc_OverflowError, "Index overflow.");
         return NULL;
     }
 
@@ -183,7 +182,7 @@ static PyMappingMethods polygon_as_mapping = {
 };
 
 PyDoc_STRVAR(polygon_verts_doc,
-    "Tuple of polygon's verticals");
+    " Tuple of polygon's verticals ");
 
 #define OFF(x) offsetof(PyPolygonObject, x)
 
@@ -192,14 +191,17 @@ static PyMemberDef polygon_members[] = {
     {NULL}
 };
 
-#define QUADRANT_NUM(verts, cq, x, y) \
-if (verts == NULL) return NULL; \
-if (verts + 1 == NULL) return NULL; \
+#define QUADRANT_NUM(verts, cq, x, y) /* warning: not safe for verts*/ \
 if (*verts == x && *(verts + 1) == y) Py_RETURN_TRUE; /* vertical case */ \
 if (*verts > x && *(verts + 1) >= y) cq = 0; \
 else if (*_verts <= x && *(_verts + 1) > y) cq = 1; \
 else if (*_verts < x && *(_verts + 1) <= y) cq = 2; \
 else cq = 3;
+
+// TODO: fix ubuntu gcc compiler error - undefined symbol: PSEUDO_SCALAR_PRODUCT
+#ifndef PSEUDO_SCALAR_PRODUCT
+#   define PSEUDO_SCALAR_PRODUCT(v1, v2, x, y) (*v2 - *v1) * (y - *(v1 + 1)) - (x - *v1) * (*(v2 + 1) - *(v1 + 1))
+#endif
 
 # define WINDING_SUM(cq, v1, v2, x, y, wnum) \
     if (cq == 1) wnum += 1; \
@@ -208,36 +210,34 @@ else cq = 3;
                                                                                             // the pseudoscalar product may be zero
 
 /*[clinic input]
-polygon.is_inner_point
+geompy.polygon.is_inner_point
     
     point: 'O'
         Point for which we determine where it lies relative to the polygon.
  
-Return True if:
+Returns
 
+True if:
 1. point is vertical of polygon;
 2. point lies on the boundary of the polygon;
 3. point lies inside the polygon.
 
-Else, return False (point lies outside the polygon).
+else False (point lies outside the polygon).
 [clinic start generated code]*/
 
-static PyObject*
-polygon_is_inner_point_impl(PyPolygonObject* self, PyObject* point)
-/*[clinic end generated code: output=1bd7346263dbb3a6 input=86d1e81a7c4b5eaf]*/
+static PyObject *
+geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
+/*[clinic end generated code: output=891bbb7fdf805b92 input=fb1658ba75c0b44d]*/
 {
-    double x;
-    double y;
+    double x, y;
     double* _verts;
     short wnum; // winding number
-    unsigned short curr_qdrnt = NULL;
-    unsigned short first_qdrnt = NULL;
-    unsigned short prev_qdrnt = NULL;
+    unsigned short curr_qdrnt, first_qdrnt, prev_qdrnt;
     Py_ssize_t po_size;
 
-    if (!self->_verts && !self->verts) {
+    if (!self->_verts || !self->verts) {
         PyErr_SetString(PyExc_TypeError,
-            "null polygon object");
+            "Null polygon object.");
 
         return NULL;
     }
@@ -245,7 +245,7 @@ polygon_is_inner_point_impl(PyPolygonObject* self, PyObject* point)
     po_size = PyTuple_Size(self->verts);
     if (po_size < 3) {
         PyErr_SetString(PyExc_TypeError,
-            "polygon must contain at least 3 vertices");
+            "Polygon must contain >= 3 vertices.");
 
         return NULL;
     }
@@ -253,13 +253,16 @@ polygon_is_inner_point_impl(PyPolygonObject* self, PyObject* point)
 
     if (!PyArg_ParseTuple(point, "dd:is_inner_point", &x, &y)) {
         PyErr_SetString(PyExc_TypeError,
-            "argument parse error");
+            "Argument parse error.");
 
         return NULL;
     }
 
     _verts = self->_verts;
     wnum = 0;
+    curr_qdrnt = 0;
+    first_qdrnt = 0;
+    prev_qdrnt = 0;
     QUADRANT_NUM(_verts, first_qdrnt, x, y);
     prev_qdrnt = first_qdrnt;
     po_size--;
@@ -285,22 +288,9 @@ polygon_is_inner_point_impl(PyPolygonObject* self, PyObject* point)
     Py_RETURN_FALSE; // outside case (wnum = 0)
 }
 
-/*
-* Polygon dealloc function for debug tests
-*/
-void
-_PyPolygon_Dealloc(PyPolygonObject* self) {
-    if (PyPolygon_CheckExact(self)) {
-        polygon_dealloc(self);
-    }
-};
-
-/*
-* Polygon init function for debug tests
-*/
 int
-_PyPolygon_Init(PyPolygonObject* self, PyObject* args) {
-    if (!PyPolygon_CheckExact(self)) {
+PyPolygon_Init(PyPolygonObject* self, PyObject* args) {
+    if (self->_verts != NULL || self->verts != NULL) {
         return -1;
     }
 
@@ -309,22 +299,36 @@ _PyPolygon_Init(PyPolygonObject* self, PyObject* args) {
 };
 
 PyObject*
-PyPolygon_IsInnerPoint(PyPolygonObject* self, PyObject* point) {
-    return polygon_is_inner_point_impl(self, point);
+PyPolygon_New(void) {
+    return polygon_new(&PyPolygon_Type, NULL, NULL);
 }
 
-/*
-* Public interface function polygon_new
-*/
 PyObject*
-PyPolygon_New(PyTypeObject* subtype, PyObject* args, PyObject* kwargs) {
-    return polygon_new(subtype, args, kwargs);
+PyPolygon_IsInnerPoint(PyPolygonObject* self, PyObject* point) {
+    double x, y;
+
+    if (!PyArg_ParseTuple(point, "dd:PyPolygon_IsInnerPoint", &x, &y)) {
+        return NULL;
+    }
+
+    return geompy_polygon_is_inner_point_impl(self, point);
 }
+
+void
+_PyPolygon_Dealloc(PyPolygonObject* self) {
+    polygon_dealloc(self);
+};
 
 static PyMethodDef polygon_methods[] = {
-    POLYGON_IS_INNER_POINT_METHODDEF
+    _GEOMPY_POLYGON_IS_INNER_POINT_METHODDEF
     {NULL}  /* Sentinel */
 };
+
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
+#  define ADDITIONAL_ATTRIBUTES(tp_version_tag, tp_finalize, tp_vectorcall) tp_version_tag, tp_finalize, tp_vectorcall
+#else
+#  define ADDITIONAL_ATTRIBUTES(tp_version_tag, tp_finalize, tp_vectorcall)
+#endif
 
 PyTypeObject PyPolygon_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
@@ -376,7 +380,5 @@ PyTypeObject PyPolygon_Type = {
     0,                                      /* tp_subclasses */
     0,                                      /* tp_weaklist */
     0,                                      /* tp_del */
-    0,                                      /* tp_version_tag */
-    0,                                      /* tp_finalize */
-    0                                       /* tp_vectorcall */
+    ADDITIONAL_ATTRIBUTES(0, 0, 0)
 };
