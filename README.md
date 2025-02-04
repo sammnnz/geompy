@@ -1,8 +1,11 @@
 # GeomPy
 [![license](https://img.shields.io/badge/License-APACHE_2.0-blue.svg)](http://www.apache.org/licenses/)
-![Tests](https://github.com/sammnnz/GeomPy/actions/workflows/tests-ub.yml/badge.svg)
+
+[//]: # (![Tests]&#40;https://github.com/sammnnz/GeomPy/actions/workflows/tests-ub.yml/badge.svg&#41;)
 [![coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-cov-develop.json)](https://codecov.io/gh/sammnnz/GeomPy)
-[![coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-test-mac-te-badges_tests.json)](https://github.com/sammnnz/GeomPy/actions/workflows/tests-mac.yml)
+[![mac](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-test-mac-te-badges_tests.json)](https://github.com/sammnnz/GeomPy/actions/workflows/tests-mac.yml)
+[![windows](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-test-windows-te-badges_tests.json)](https://github.com/sammnnz/GeomPy/actions/workflows/tests-win.yml)
+[![ubuntu](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-test-ubuntu-te-badges_tests.json)](https://github.com/sammnnz/GeomPy/actions/workflows/tests-ub.yml)
 
 Python/C API library for geometry calculations.
 
