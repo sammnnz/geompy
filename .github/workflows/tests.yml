@@ -37,13 +37,23 @@ on:
          required: false
 
 jobs:
+  pre:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse ref
+        run: |
+          if [ ${{github.event_name}} == 'pull_request' ]; then
+            echo "CURRENTREF=${{github.event.pull_request.head.ref}}" >> $GITHUB_ENV
+          else
+            echo "CURRENTREF=${{inputs.ref}}" >> $GITHUB_ENV
+          fi
   tests:
     runs-on: ${{inputs.os}}
     steps:
       - uses: actions/checkout@v3
         with:
           repository: sammnnz/geompy
-          ref: ${{inputs.ref}}
+          ref: ${{env.CURRENTREF}}
       - name: Setup Python ${{inputs.py}}
         uses: actions/setup-python@v2
         with:
