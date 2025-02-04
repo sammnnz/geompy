@@ -52,7 +52,6 @@ jobs:
           filename: geompy-test-windows-${{github.ref_name}}.json
           label: unittests
           labelColor: "#262b30"
-          logoColor: "#ffffff"
           message: passed
           color: '#32c955'
           logoSvg: microsoft.svg
