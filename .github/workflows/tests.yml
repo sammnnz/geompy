@@ -56,24 +56,24 @@ jobs:
         run: |
           pytest --cov-config=.coveragerc --verbose --color=yes --assert=plain
       - name: Create coverage report in xml for codecov
-        if: ${{inputs.codecov}} == 'true'
+        if: ${{inputs.codecov == 'true'}}
         run: |
           coverage xml -o coverage.xml
       - name: Upload coverage report (xml) artefact
-        if: ${{inputs.codecov}} == 'true'
+        if: ${{inputs.codecov == 'true'}}
         uses: actions/upload-artifact@v4
         with:
           name: geompy-codecov-${{inputs.os}}-py${{inputs.py}}
           overwrite: true
           path: coverage.xml
       - name: Create coverage report in json
-        if: ${{inputs.cov-json}} == 'true'
+        if: ${{inputs.cov-json == 'true'}}
         run: |
           coverage json -o coverage.json
         shell: bash
       - name: Parse json
         continue-on-error: true
-        if: ${{inputs.cov-json}} == 'true'
+        if: ${{inputs.cov-json == 'true'}}
         # https://jqlang.org/download/
         run: |
           if [[ ${{inputs.os}} =~ ^windows.* ]]; then
@@ -86,23 +86,23 @@ jobs:
           
           jq ".totals" coverage.json >> cov-${{inputs.os}}-py${{inputs.py}}.json
       - name: Upload coverage report (json) artefact
-        if: ${{inputs.cov-json}} == 'true'
+        if: ${{inputs.cov-json == 'true'}}
         uses: actions/upload-artifact@v4
         with:
           name: geompy-cov-${{inputs.os}}-py${{inputs.py}}
           overwrite: true
           path: cov-${{inputs.os}}-py${{inputs.py}}.json
       - name: Linter
-        if: ${{inputs.lint}} == 'true'
+        if: ${{inputs.lint == 'true'}}
         run: |
           flake8 src tests
       - name: Type-checker
-        if: ${{inputs.typecheck}} == 'true'
+        if: ${{inputs.typecheck == 'true'}}
         run: |
           mypy src
 
   codecov:
-    if: ${{inputs.codecov}} == 'true'
+    if: ${{inputs.codecov == 'true'}}
     needs: tests
     runs-on: ubuntu-latest
     steps:
