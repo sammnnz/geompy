@@ -31,6 +31,11 @@ jobs:
       - name: Color define (default)
         run: |
           echo "COVERAGECOLOR=orange" >> $GITHUB_ENV
+          if [ ${{inputs.named-logo}} == ]; then
+            echo "LOGOCOLOR=" >> $GITHUB_ENV
+          else
+            echo "LOGOCOLOR=#ffffff" >> $GITHUB_ENV
+          fi
         shell: bash
       - name: Color define (failure case)
         if: ${{ inputs.result == 'failure'}}
@@ -51,7 +56,7 @@ jobs:
           filename: geompy-test-${{inputs.flag}}-${{github.ref_name}}.json
           label: ${{inputs.label}}
           #labelColor: '#262b30'
-          logoColor: '#ffffff'
+          logoColor: ${{ env.LOGOCOLOR }}
           message: ${{inputs.message}}
           color: ${{ env.COVERAGECOLOR }}
           namedLogo: ${{inputs.named-logo}}
