@@ -48,43 +48,12 @@ on:
          - 'false'
 
 jobs:
-  pre:
-   runs-on: ubuntu-latest
-   steps:
-      - id: lint
-        run: |
-             if [ ${{inputs.lint}} == 'true' ]; then
-               echo "value=true" >> $GITHUB_OUTPUT
-             elif [ ${{inputs.lint}} == 'false' ]; then
-               echo "value=" >> $GITHUB_OUTPUT
-             else
-               echo "Invalid argument: lint must be true or false."
-               exit 1
-             fi
-        shell: bash
-      - id: typecheck
-        run: |
-             if [ ${{inputs.typecheck}} == 'true' ]; then
-               echo "value=true" >> $GITHUB_OUTPUT
-             elif [ ${{inputs.typecheck}} == 'false' ]; then
-               echo "value=" >> $GITHUB_OUTPUT
-             else
-               echo "Invalid argument: lint must be true or false."
-               exit 1
-             fi
-        shell: bash
-
-   outputs:
-      lint: ${{ steps.lint.outputs.value }}
-      typecheck: ${{ steps.typecheck.outputs.value }}
-
   tests-call:
-     needs: pre
      uses: ./.github/workflows/tests.yml
      with:
        os: ${{inputs.os}}
        py: ${{inputs.py}}
-       lint: ${{needs.pre.outputs.lint}}
-       typecheck: ${{needs.pre.outputs.typecheck}}
+       lint: ${{inputs.lint}}
+       typecheck: ${{inputs.typecheck}}
      secrets:
        token: ${{secrets.GITHUB_TOKEN}}
