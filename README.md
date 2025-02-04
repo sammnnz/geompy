@@ -1,7 +1,9 @@
 # GeomPy
-[![license](https://img.shields.io/badge/License-APACHE_2.0-blue.svg)](http://www.apache.org/licenses/)
-![Tests](https://github.com/sammnnz/GeomPy/actions/workflows/tests-ub.yml/badge.svg)
+[![license](https://img.shields.io/badge/License-APACHE_2.0-green.svg)](http://www.apache.org/licenses/)
 [![coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-cov-develop.json)](https://codecov.io/gh/sammnnz/GeomPy)
+[![windows](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-test-windows-develop.json)](https://github.com/sammnnz/GeomPy/actions/workflows/tests-win.yml)
+[![mac](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-test-mac-develop.json)](https://github.com/sammnnz/GeomPy/actions/workflows/tests-mac.yml)
+[![ubuntu](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/sammnnz/8785eb132e71830a74e34901b704e0e9/raw/geompy-test-ubuntu-develop.json)](https://github.com/sammnnz/GeomPy/actions/workflows/tests-ub.yml)
 
 Python/C API library for geometry calculations.
 
