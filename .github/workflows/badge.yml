@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Color define (default)
         run: |
-          echo "COVERAGECOLOR=blue" >> $GITHUB_ENV
+          echo "COVERAGECOLOR=orange" >> $GITHUB_ENV
         shell: bash
       - name: Color define (failure case)
         if: ${{ inputs.result == 'failure'}}
@@ -40,7 +40,7 @@ jobs:
       - name: Color define (success case)
         if: ${{ inputs.result == 'success'}}
         run: |
-          echo "COVERAGECOLOR=green" >> $GITHUB_ENV
+          echo "COVERAGECOLOR=#32c955" >> $GITHUB_ENV
         shell: bash
       - name: Create 'tests passed' badge
         uses: schneegans/dynamic-badges-action@v1.0.0
@@ -49,6 +49,7 @@ jobs:
           gistID: 8785eb132e71830a74e34901b704e0e9
           filename: geompy-test-${{inputs.flag}}-${{github.ref_name}}.json
           label: ${{inputs.label}}
+          labelColor: "#262b30"
           message: ${{inputs.message}}
           color: ${{ env.COVERAGECOLOR }}
           namedLogo: ${{inputs.named-logo}}
