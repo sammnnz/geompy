@@ -58,6 +58,19 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
       codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
+  badge:
+    needs: tests-call
+    uses: ./.github/workflows/badge.yml
+    with:
+      flag: 'ubuntu'
+      label: 'unittests'
+      message: 'passed'
+      named-logo: 'linux'
+      result: ${{needs.tests-call.result}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      badge_gist_token: ${{ secrets.BADGE_GIST_TOKEN }}
+
   coverage-badge:
     continue-on-error: true
     if: ${{inputs.cov-badge}} == 'true'
@@ -73,12 +86,6 @@ jobs:
           merge-multiple: true
           path: .temp
           pattern: geompy-cov-*
-      - name: Print artefact (DEBUG)
-        run: |
-          for file in `find .temp -type f`; do
-            echo "$file"
-            cat $file
-          done
       - name: Install dependencies (bc, jq)
         run: |
           sudo apt-get install bc
