@@ -1,0 +1,52 @@
+name: Badge upload (tests passed)
+
+on:
+  workflow_call:
+    inputs:
+      flag:
+        required: true
+        type: string
+      label:
+        required: true
+        type: string
+      message:
+        required: true
+        type: string
+      named-logo:
+        required: true
+        type: string
+      result:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Color define (default)
+        run: |
+          echo "COVERAGECOLOR=blue" >> $GITHUB_ENV
+        shell: bash
+      - name: Color define (failure case)
+        if: ${{ inputs.result}} == 'failure'
+        run: |
+          echo "COVERAGECOLOR=red" >> $GITHUB_ENV
+        shell: bash
+      - name: Color define (success case)
+        if: ${{ needs.tests-call.result}} == 'success'
+        run: |
+          echo "COVERAGECOLOR=green" >> $GITHUB_ENV
+        shell: bash
+      - name: Create 'tests passed' badge
+        uses: schneegans/dynamic-badges-action@v1.0.0
+        with:
+          auth: ${{ secrets.BADGE_GIST_TOKEN }}
+          gistID: 8785eb132e71830a74e34901b704e0e9
+          filename: geompy-test-${{inputs.flag}}-${{github.ref_name}}.json
+          label: ${{inputs.label}}
+          message: ${{inputs.message}}
+          color: ${{ env.COVERAGECOLOR }}
+          namedLogo: ${{inputs.named-logo}}
