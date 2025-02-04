@@ -51,7 +51,7 @@ jobs:
           gistID: 8785eb132e71830a74e34901b704e0e9
           filename: geompy-test-windows-${{github.ref_name}}.json
           label: unittests
-          labelColor: "#262b30"
+          labelColor: '#262b30'
           message: passed
           color: '#32c955'
           logoSvg: microsoft.svg
