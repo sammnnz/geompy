@@ -25,3 +25,16 @@ jobs:
         py: ${{matrix.py}}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
+
+  badge:
+    needs: tests-call
+    uses: ./.github/workflows/badge.yml
+    with:
+      flag: 'mac'
+      label: 'tests'
+      message: 'passed'
+      named-logo: 'apple'
+      result: ${{needs.tests-call.result}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      badge_gist_token: ${{ secrets.BADGE_GIST_TOKEN }}
