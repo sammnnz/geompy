@@ -50,6 +50,7 @@ jobs:
           filename: geompy-test-${{inputs.flag}}-${{github.ref_name}}.json
           label: ${{inputs.label}}
           labelColor: "#262b30"
+          logoColor: "#ffffff"
           message: ${{inputs.message}}
           color: ${{ env.COVERAGECOLOR }}
           namedLogo: ${{inputs.named-logo}}
