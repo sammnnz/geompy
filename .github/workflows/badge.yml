@@ -1,6 +1,8 @@
 name: Badge upload (tests passed)
 
 on:
+  push:
+    branches: [te-*]
   workflow_call:
     inputs:
       flag:
@@ -45,12 +47,12 @@ jobs:
       - name: Create 'tests passed' badge
         uses: schneegans/dynamic-badges-action@v1.0.0
         with:
-          auth: ${{ secrets.badge_gist_token }}
+          auth: ${{ secrets.BADGE_GIST_TOKEN }}
           gistID: 8785eb132e71830a74e34901b704e0e9
-          filename: geompy-test-${{inputs.flag}}-${{github.ref_name}}.json
-          label: ${{inputs.label}}
+          filename: geompy-test-windows-${{github.ref_name}}.json
+          label: unittests
           labelColor: "#262b30"
           logoColor: "#ffffff"
-          message: ${{inputs.message}}
-          color: ${{ env.COVERAGECOLOR }}
-          namedLogo: ${{inputs.named-logo}}
+          message: passed
+          color: '#32c955'
+          logoSvg: microsoft.svg
