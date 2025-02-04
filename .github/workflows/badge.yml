@@ -31,12 +31,12 @@ jobs:
           echo "COVERAGECOLOR=blue" >> $GITHUB_ENV
         shell: bash
       - name: Color define (failure case)
-        if: ${{ inputs.result}} == 'failure'
+        if: ${{ inputs.result == 'failure'}}
         run: |
           echo "COVERAGECOLOR=red" >> $GITHUB_ENV
         shell: bash
       - name: Color define (success case)
-        if: ${{ needs.tests-call.result}} == 'success'
+        if: ${{ needs.tests-call.result == 'success'}}
         run: |
           echo "COVERAGECOLOR=green" >> $GITHUB_ENV
         shell: bash

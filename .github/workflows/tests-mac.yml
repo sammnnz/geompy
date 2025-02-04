@@ -28,12 +28,12 @@ jobs:
 
   badge:
     needs: tests-call
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ./.github/workflows/badge.yml
-        with:
-          flag: 'mac'
-          label: 'unittests'
-          message: 'passed'
-          named-logo: 'apple'
-          result: ${{needs.tests-call.result}}
+    uses: ./.github/workflows/badge.yml
+    with:
+      flag: 'mac'
+      label: 'unittests'
+      message: 'passed'
+      named-logo: 'apple'
+      result: ${{needs.tests-call.result}}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
