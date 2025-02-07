@@ -6,7 +6,13 @@
 extern "C" {
 #endif
 
-PyAPI_FUNC(void) _PyPolygon_Dealloc(PyPolygonObject* self);
+typedef struct {
+	PyObject_HEAD
+		double* _verts;
+	PyObject* verts;
+} PyPolygonObject;
+
+PyAPI_FUNC(int) _PyPolygon_Dealloc(PyObject* self);
 
 #ifdef __cplusplus
 }

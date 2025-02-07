@@ -6,14 +6,6 @@
 extern C{
 #endif
 
-typedef struct PyPolygonObject PyPolygonObject;
-
-struct PyPolygonObject {
-	PyObject_HEAD
-		double* _verts;
-	PyObject* verts;
-};
-
 /* Polygon object type */
 
 PyAPI_DATA(PyTypeObject) PyPolygon_Type;
@@ -24,15 +16,9 @@ PyAPI_DATA(PyTypeObject) PyPolygon_Type;
 #  define PyPolygon_CheckExact(op) (Py_TYPE(op) == &PyPolygon_Type)
 #endif
 
-
-/* Public API */
-
-PyAPI_FUNC(int)       PyPolygon_Init(PyPolygonObject* self, PyObject* args);
+PyAPI_FUNC(int)       PyPolygon_Init(PyObject* self, PyObject* args);
 PyAPI_FUNC(PyObject*) PyPolygon_New(void);
-PyAPI_FUNC(PyObject*) PyPolygon_IsInnerPoint(PyPolygonObject* self, PyObject* point);
-
-
-/* Private API */
+PyAPI_FUNC(PyObject*) PyPolygon_IsInnerPoint(PyObject* self, PyObject* point);
 
 #ifndef Py_LIMITED_API
 #  define Py_CPYTHON_POLYGON_H

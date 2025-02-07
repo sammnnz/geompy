@@ -1,9 +1,9 @@
-/* Polygon Object Module Description */
+/* Polygon object implementation */
+
 #include <Python.h>
+#include <structmember.h>              // PyMemberDef   T_OBJECT    READONLY
 
 #include "../include/polygon.h"
-#include <structmember.h>
-#include "clinic/polygonobject.c.h"
 #include "../include/c/_math.h"
 
 /*[clinic input]
@@ -11,6 +11,8 @@ module _geompy
 class _geompy.polygon "PyPolygonObject *" "&PyPolygon_Type"
 [clinic start generated code]*/
 /*[clinic end generated code: output=da39a3ee5e6b4b0d input=3b980588babc08e9]*/
+
+#include "clinic/polygonobject.c.h"
 
 PyDoc_STRVAR(polygon_doc,
     "Polygon object class.\n\
@@ -288,37 +290,6 @@ geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
     Py_RETURN_FALSE; // outside case (wnum = 0)
 }
 
-int
-PyPolygon_Init(PyPolygonObject* self, PyObject* args) {
-    if (self->_verts != NULL || self->verts != NULL) {
-        return -1;
-    }
-
-    polygon_init(self, args);
-    return 0;
-};
-
-PyObject*
-PyPolygon_New(void) {
-    return polygon_new(&PyPolygon_Type, NULL, NULL);
-}
-
-PyObject*
-PyPolygon_IsInnerPoint(PyPolygonObject* self, PyObject* point) {
-    double x, y;
-
-    if (!PyArg_ParseTuple(point, "dd:PyPolygon_IsInnerPoint", &x, &y)) {
-        return NULL;
-    }
-
-    return geompy_polygon_is_inner_point_impl(self, point);
-}
-
-void
-_PyPolygon_Dealloc(PyPolygonObject* self) {
-    polygon_dealloc(self);
-};
-
 static PyMethodDef polygon_methods[] = {
     _GEOMPY_POLYGON_IS_INNER_POINT_METHODDEF
     {NULL}  /* Sentinel */
@@ -381,4 +352,50 @@ PyTypeObject PyPolygon_Type = {
     0,                                      /* tp_weaklist */
     0,                                      /* tp_del */
     ADDITIONAL_ATTRIBUTES(0, 0, 0)
+};
+
+int
+PyPolygon_Init(PyObject* self, PyObject* args) {
+    if (!PyPolygon_CheckExact(self)) {
+        // TODO
+        return -1;
+    }
+
+    if (((PyPolygonObject*)self)->_verts != NULL || ((PyPolygonObject*)self)->verts != NULL) {
+        return -1;
+    }
+
+    polygon_init(((PyPolygonObject*)self), args);
+    return 0;
+};
+
+PyObject*
+PyPolygon_New(void) {
+    return polygon_new(&PyPolygon_Type, NULL, NULL);
+}
+
+PyObject*
+PyPolygon_IsInnerPoint(PyObject* self, PyObject* point) {
+    double x, y;
+
+    if (!PyPolygon_CheckExact(self)) {
+        // TODO
+        return NULL;
+    }
+
+    if (!PyArg_ParseTuple(point, "dd:PyPolygon_IsInnerPoint", &x, &y)) {
+        return NULL;
+    }
+
+    return geompy_polygon_is_inner_point_impl((PyPolygonObject*)self, point);
+}
+
+int
+_PyPolygon_Dealloc(PyObject* self) {
+    if (!PyPolygon_CheckExact(self)) {
+        //TODO
+        return -1;
+    }
+
+    polygon_dealloc((PyPolygonObject*)self);
 };
