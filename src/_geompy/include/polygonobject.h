@@ -1,7 +1,7 @@
 /* Polygon description */
 
-#ifndef Py_POLYGON_H
-#define Py_POLYGON_H
+#ifndef Py_POLYGONOBJECT_H
+#define Py_POLYGONOBJECT_H
 #ifdef __cplusplus
 extern C{
 #endif
@@ -21,12 +21,12 @@ PyAPI_FUNC(PyObject*) PyPolygon_New(void);
 PyAPI_FUNC(PyObject*) PyPolygon_IsInnerPoint(PyObject* self, PyObject* point);
 
 #ifndef Py_LIMITED_API
-#  define Py_CPYTHON_POLYGON_H
-#  include  "cpython/polygon.h"
-#  undef Py_CPYTHON_POLYGON_H
+#  define Py_CPYTHON_POLYGONOBJECT_H
+#  include  "cpython/polygonobject.h"
+#  undef Py_CPYTHON_POLYGONOBJECT_H
 #endif
 
 #ifdef __cplusplus
 }
 #endif
-#endif // !Py_POLYGON_H
+#endif // !Py_POLYGONOBJECT_H

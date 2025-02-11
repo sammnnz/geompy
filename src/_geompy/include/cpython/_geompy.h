@@ -1,4 +1,4 @@
-#ifndef Py_CPYTHON_GEOMPY_H
+#ifndef Py_CPYTHON__GEOMPY_H
 #  error "this header file must not be included directly"
 #endif
 

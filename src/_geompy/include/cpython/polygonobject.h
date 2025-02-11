@@ -1,4 +1,4 @@
-#ifndef Py_CPYTHON_POLYGON_H
+#ifndef Py_CPYTHON_POLYGONOBJECT_H
 #  error "this header file must not be included directly"
 #endif
 

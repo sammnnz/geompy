@@ -9,7 +9,7 @@ PyDoc_STRVAR(geompy_generate_random_polygon__doc__,
 "Implementation of generate_random_polygon.");
 
 #define GEOMPY_GENERATE_RANDOM_POLYGON_METHODDEF    \
-    {"generate_random_polygon", (PyCFunction)geompy_generate_random_polygon, METH_FASTCALL, geompy_generate_random_polygon__doc__},
+    {"generate_random_polygon", (PyCFunction)(void(*)(void))geompy_generate_random_polygon, METH_FASTCALL, geompy_generate_random_polygon__doc__},
 
 static PyObject *
 geompy_generate_random_polygon_impl(PyObject *module, PyObject *center,

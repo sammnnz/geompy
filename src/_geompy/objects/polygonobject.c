@@ -3,8 +3,7 @@
 #include <Python.h>
 #include <structmember.h>              // PyMemberDef   T_OBJECT    READONLY
 
-#include "../include/polygon.h"
-#include "../include/c/_math.h"
+#include "../include/Geompy.h"
 
 /*[clinic input]
 module _geompy
@@ -64,7 +63,7 @@ polygon_dealloc(PyPolygonObject* self) {
 * Create instance of PyPolygonObject
 */
 static int
-polygon_init(PyPolygonObject* self, PyObject* args) {
+polygon_init(PyPolygonObject* self, PyObject* args, PyObject* kwargs) {
     double x, y;
     double* _verts;
     Py_ssize_t args_size, count;
@@ -106,7 +105,7 @@ polygon_init(PyPolygonObject* self, PyObject* args) {
         }
 
         count++;
-        _verts = (double*)realloc(self->_verts, sizeof(double) * 2 * count);
+        _verts = (double*)realloc(self->_verts, sizeof(double) * 2 * (size_t)count);
         if (!_verts) {
             PyErr_SetString(PyExc_MemoryError,
                 "Malloc error.");
@@ -291,7 +290,7 @@ geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point)
 }
 
 static PyMethodDef polygon_methods[] = {
-    _GEOMPY_POLYGON_IS_INNER_POINT_METHODDEF
+    GEOMPY_POLYGON_IS_INNER_POINT_METHODDEF
     {NULL}  /* Sentinel */
 };
 
@@ -365,9 +364,9 @@ PyPolygon_Init(PyObject* self, PyObject* args) {
         return -1;
     }
 
-    polygon_init(((PyPolygonObject*)self), args);
+    polygon_init(((PyPolygonObject*)self), args, NULL);
     return 0;
-};
+}
 
 PyObject*
 PyPolygon_New(void) {
@@ -398,4 +397,5 @@ _PyPolygon_Dealloc(PyObject* self) {
     }
 
     polygon_dealloc((PyPolygonObject*)self);
+    return 0;
 };
