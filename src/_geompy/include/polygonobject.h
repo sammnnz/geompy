@@ -8,7 +8,7 @@ extern C{
 
 /* Polygon object type */
 
-PyAPI_DATA(PyTypeObject) PyPolygon_Type;
+GPyAPI_DATA(PyTypeObject) PyPolygon_Type;
 
 #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 9
 #  define PyPolygon_CheckExact(op) Py_IS_TYPE(op, &PyPolygon_Type)
@@ -16,9 +16,9 @@ PyAPI_DATA(PyTypeObject) PyPolygon_Type;
 #  define PyPolygon_CheckExact(op) (Py_TYPE(op) == &PyPolygon_Type)
 #endif
 
-PyAPI_FUNC(int)       PyPolygon_Init(PyObject* self, PyObject* args);
-PyAPI_FUNC(PyObject*) PyPolygon_New(void);
-PyAPI_FUNC(PyObject*) PyPolygon_IsInnerPoint(PyObject* self, PyObject* point);
+GPyAPI_FUNC(int)       PyPolygon_Init(PyObject* self, PyObject* args);
+GPyAPI_FUNC(PyObject*) PyPolygon_New(void);
+GPyAPI_FUNC(PyObject*) PyPolygon_IsInnerPoint(PyObject* self, PyObject* point);
 
 #ifndef Py_LIMITED_API
 #  define Py_CPYTHON_POLYGONOBJECT_H
