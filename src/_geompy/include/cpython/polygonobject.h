@@ -12,7 +12,7 @@ typedef struct {
 	PyObject* verts;
 } PyPolygonObject;
 
-PyAPI_FUNC(int) _PyPolygon_Dealloc(PyObject* self);
+GPyAPI_FUNC(int) _PyPolygon_Dealloc(PyObject* self);
 
 #ifdef __cplusplus
 }

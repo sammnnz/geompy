@@ -1,9 +1,8 @@
 /* Polygon object implementation */
-
 #include <Python.h>
 #include <structmember.h>              // PyMemberDef   T_OBJECT    READONLY
 
-#include "../include/Geompy.h"
+#include "Geompy.h"
 
 /*[clinic input]
 module _geompy
@@ -398,4 +397,4 @@ _PyPolygon_Dealloc(PyObject* self) {
 
     polygon_dealloc((PyPolygonObject*)self);
     return 0;
-};
+}

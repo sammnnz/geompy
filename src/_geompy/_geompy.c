@@ -3,7 +3,7 @@
 */
 #include <Python.h>
 
-#include "include/Geompy.h"
+#include "Geompy.h"
 
 /*[clinic input]
 module _geompy
@@ -174,7 +174,7 @@ static struct PyModuleDef geompy_module = {
 	NULL  					// m_free
 };
 
-PyMODINIT_FUNC
+GPyMODINIT_FUNC
 PyInit__geompy(void) {
 	PyObject* module = PyModule_Create(&geompy_module);
 
