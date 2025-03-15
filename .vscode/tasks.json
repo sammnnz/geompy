@@ -1,0 +1,441 @@
+{
+    "version": "2.0.0",
+    "options": {
+        "env": {
+            "COVERAGE": "1",
+            "DEBUG": "1",
+            "PY_VERSION": "39",
+            "PY_VERSION_FULL": "3.9.13",
+            "SRC_PATH": "${workspaceFolder}/src",
+            "TESTS_PATH": "${workspaceFolder}/tests",
+            "VENV_ROOT": "${workspaceFolder}/.vs"
+        }
+    },
+    "tasks": [
+        {
+            "label": "Build _geompy",
+            "type": "shell",
+            "windows": { // https://code.visualstudio.com/docs/editor/tasks#_common-questions
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+                        "args": [
+                            "--login",
+                            "-i",
+                            "-c",
+                        ]
+                    },
+                },
+                "command": "make",
+                "args": [
+                    "-f",
+                    "Makefile",
+                    "build_dir=$(shell cygpath -m '$SRC_PATH')",
+                    "coverage=$COVERAGE",
+                    "debug=$DEBUG",
+                    "py_version=$PY_VERSION"
+                ],
+            },
+            "linux":{
+                "command": "make",
+                "args": [
+                    "-f",
+                    "Makefile",
+                    "build_ext",
+                    "build_dir=$SRC_PATH",
+                    "py_version=$PY_VERSION"
+                ]
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/src/_geompy"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Task for build _geompy lib"
+        },
+        {
+            "label": "Clean [Build _geompy]",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+                        "args": [
+                            "--login",
+                            "-i",
+                            "-c",
+                        ]
+                    },
+                }
+            },
+            "command": "make",
+            "args": [
+                "-f",
+                "Makefile",
+                "clean",
+                "build_dir=`pwd`/../",
+                "py_version=$PY_VERSION"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/src/_geompy"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Task for clean after [Build _geompy]",
+        },
+        {
+            "label": "Test CPython API",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+                        "args": [
+                            "--login",
+                            "-i",
+                            "-c",
+                        ]
+                    },
+                },
+                "args": [
+                    "-f",
+                    "Makefile",
+                    "build_dir=`pwd`",
+                    "debug=1",
+                    "py_version=$PY_VERSION",
+                    "src_path=$(shell cygpath -m '$SRC_PATH')",
+                    "tests_cpython_path=$(shell cygpath -m '$TESTS_PATH/cpython')",
+                    "lib_sitepackages_path=$(shell cygpath -m '$VENV_ROOT/.venv$PY_VERSION_FULL/Lib/site-packages')"
+                ]
+            },
+            "command": "make",
+            "args": [
+                "-f",
+                "Makefile",
+                "build_dir=`pwd`",
+                "debug=1",
+                "py_version=$PY_VERSION",
+                "src_path=$SRC_PATH",
+                "tests_cpython_path=$TESTS_PATH/cpython",
+                "lib_sitepackages_path=$VENV_ROOT/.venv$PY_VERSION_FULL/Lib/site-packages"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/tests/cpython/c"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Task for build test__geompy exec.",
+            "dependsOn":[
+                "Create pyenv .venv (win)"
+            ]
+        },
+        {
+            "label": "Clean [Test CPython API]",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+                        "args": [
+                            "--login",
+                            "-i",
+                            "-c",
+                        ]
+                    },
+                }
+            },
+            "command": "make",
+            "args": [
+                "-f",
+                "Makefile",
+                "clean",
+                "build_dir=`pwd`",
+                "py_version=$PY_VERSION"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/tests/cpython/c"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Task for clean after [Test CPython API]",
+        },
+        // {
+        //     "label": "Install test deps",
+        //     "type": "shell",
+        //     "windows": {
+        //         "options": {
+        //             "shell": {
+        //                 "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+        //                 "args": [
+        //                     "--login",
+        //                     "-i",
+        //                     "-c",
+        //                 ]
+        //             },
+        //         }
+        //     },
+        //     "command": ".",
+        //     "args": [
+        //         "./deps.sh",
+        //     ],
+        //     "options": {
+        //         "cwd": "${workspaceFolder}/tests/cpython/c"
+        //     },
+        //     "group": {
+        //         "kind": "build",
+        //         "isDefault": false
+        //     },
+        //     "detail": "Task for install test dependencies.",
+        // },
+        {
+            "label": "Coverage report",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+                        "args": [
+                            "--login",
+                            "-i",
+                            "-c",
+                        ]
+                    },
+                }
+            },
+            "command": "gcov",
+            "args": [
+                "-b",
+                "_geompy.c",
+                "objects/polygonobject.c"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/src/_geompy/build"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Task for create coverage report with gcov."
+        },
+        {
+            "label": "Create pyenv .venv (win)",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+                        "args": [
+                            "--login",
+                            "-i",
+                            "-c",
+                        ]
+                    },
+                }
+            },
+            "command": ".",
+            "args": [
+                "./sh/pyenv.sh",
+                "$PY_VERSION",
+                "$PY_VERSION_FULL",
+                "$VENV_ROOT",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Task for create virtual env with pyenv.",
+        },
+        {
+            "label": "Clean [Create pyenv .venv (win)]",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+                        "args": [
+                            "--login",
+                            "-i",
+                            "-c",
+                        ]
+                    },
+                }
+            },
+            "command": "rm",
+            "args": [
+                "-rf",
+                "$VENV_ROOT/.venv$PY_VERSION_FULL",
+                "$VENV_ROOT/.python-version"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Task for clean after [Create pyenv .venv (win)]",
+        },
+        {
+            "label": "Clean all .venvs",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+                        "args": [
+                            "--login",
+                            "-i",
+                            "-c",
+                        ]
+                    },
+                }
+            },
+            "command": "rm",
+            "args": [
+                "-rf",
+                "$VENV_ROOT/.venv*",
+                "$VENV_ROOT/.python-version"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Task for clean all pyenv venvs",
+        },
+        {
+            "label": "Pre Launch [test__geompy]",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Pre-Task for [test__geompy] launch.",
+            "dependsOn":[
+                "Test CPython API",
+                "Build _geompy",
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "Post Launch [test__geompy]",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Post-Task for [test__geompy] launch.",
+            "dependsOn":[
+                "Coverage report",
+                "Clean [Build _geompy]",
+                "Clean [Test CPython API]",
+                // "Clean [Create pyenv .venv (win)]"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "Build current file",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-Wall",
+                "-Wpedantic",
+                "-g3",
+                "-O0",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Task for build current file."
+        },
+        {
+            "label": "Post build current file",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+                        "args": [
+                            "--login",
+                            "-i",
+                            "-c",
+                        ]
+                    },
+                },
+                "args": [
+                "-f",
+                "${fileBasenameNoExtension}.exe",
+                ],
+            },
+            "linux": {
+                "args": [
+                "-f",
+                "${fileBasenameNoExtension}",
+                ],
+            },
+            "command": "rm",
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Post-Task for print coverage report and clean."
+        },
+    ],
+}
