@@ -1,6 +1,97 @@
 [build-system]
+#build-backend = "mesonpy"
+#requires = ["meson-python>=0.15.0"]
 requires = ["pip","setuptools>=42.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = 'geompy'
+version = '0.2.1a'
+authors = [
+  {name = 'Sam Nazarov', email = 'samnnazarov@gmail.com'},
+]
+description = 'Python/C API library for geometry calculations'
+readme = 'README.md'
+# TODO: add `license-files` once PEP 639 is accepted (see meson-python#88) (see numpy)
+license = {file = "LICENSE"}
+keywords = [
+    'geometry',
+]
+requires-python = '>=3.7, <3.11'
+classifiers = [
+    'License :: OSI Approved :: Apache Software License',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: Implementation :: CPython',
+]
+dependencies = [
+    "matplotlib<=3.6.3",
+    'numpy<=1.25.2',
+]
+
+[project.urls]
+homepage = "https://github.com/sammnnz/GeomPy"
+source = "https://github.com/sammnnz/geompy"
+tracker = "https://github.com/sammnnz/geompy/issues"
+
+# https://github.com/pypa/setuptools/discussions/3627#discussioncomment-6476654
+[project.optional-dependencies]
+testing = [
+    'pytest==7.4.4',
+    'pytest-cov==4.1.0',
+    'coverage==7.2.7',
+]
+linting = [
+    'flake8==5.0.4',
+]
+typechecking = [
+    'mypy==1.4.1',
+]
+codecov = [
+    'codecov==2.1.13; python_version~="3.7"',
+    'codecov-cli==0.3.0; python_version>="3.8"',
+]
+#all = [
+#    "test_self_dep[testing,linting,typechecking,codecov]"
+#]
+
+#https://github.com/pypa/setuptools/blob/main/pyproject.toml
+#[tool.setuptools]
+#include-package-data = true
+#packages = ["geompy"]
+#zip-safe = false
+
+#[tool.setuptools.packages.find]
+#where = ["src"]
+#include = [
+#	"geompy",
+#]
+#namespaces = true
+
+#https://stackoverflow.com/a/73062301
+#[tool.setuptools.package-data]
+#geompy = ["py.typed"]
+
+#[tool.setuptools.package-dir]
+#geompy = "src"
+
+#https://github.com/pypa/setuptools/blob/main/pyproject.toml
+#[tool.distutils.sdist]
+#formats = "zip"
+
+#[tool.distutils.bdist_wheel]
+#universal = true
+
+#[tool.meson-python.args]
+#setup = ['-Doption=false', '-Dfeature=enabled', '-Dvalue=42']
+#compile = ['-j4']
+#install = ['--tags=bindings']
+#dist = ['--include-subprojects']
 
 [tool.pytest.ini_options]
 addopts = "--cov=geompy"
