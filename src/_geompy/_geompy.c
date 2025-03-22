@@ -2,19 +2,15 @@
 * GeomPy Module Description
 */
 #include <Python.h>
-#include <math.h>
-#include <stdlib.h>
-#include <time.h>
 
-#include "include/geompy.h"
-#include "include/polygon.h"
-#include "clinic/geompy.c.h"
-#include "include/c/_math.h"
+#include "Geompy.h"
 
 /*[clinic input]
 module _geompy
 [clinic start generated code]*/
 /*[clinic end generated code: output=da39a3ee5e6b4b0d input=47d63e40a3369661]*/
+
+#include "clinic/_geompy.c.h"
 
 static int grp_Compare(const void* a, const void* b)
 {
@@ -30,7 +26,7 @@ static int grp_Compare(const void* a, const void* b)
 	}
 
 	return **a_ > **b_ ? 1 : -1;
-};
+}
 
 #define GRP_MEMORY_CLEAR(i, list) \
 	while (i) { \
@@ -91,7 +87,7 @@ geompy_generate_random_polygon_impl(PyObject *module, PyObject *center,
 	}
 
 	indicator = 1;
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	for (unsigned int ui = 0; ui < verts_num; ui++) {
 		polars[ui] = (double*)malloc(sizeof(double) * 2);
 		if (!polars[ui]) {
@@ -142,7 +138,7 @@ geompy_generate_random_polygon_impl(PyObject *module, PyObject *center,
 
 	free(polars);
 	polygon = PyPolygon_New();
-	PyPolygon_Init((PyPolygonObject*)polygon, args);
+	PyPolygon_Init(polygon, args);
 
 	return polygon;
 
@@ -151,12 +147,12 @@ memory_failed:
 		"Malloc error.");
 
 	return NULL;
-};
+}
 
 PyObject*
 Geompy_GenerateRandomPolygon(PyObject* module, PyObject* center, double radius, unsigned int verts_num) {
 	return geompy_generate_random_polygon_impl(module, center, radius, verts_num);
-};
+}
 
 PyDoc_STRVAR(geompy__doc__,
 	"_geompy: Python/C API module for geometric calculations");
@@ -167,14 +163,18 @@ static PyMethodDef geompy_methods[] = {
 };
 
 static struct PyModuleDef geompy_module = {
-	PyModuleDef_HEAD_INIT,
-	"_geompy",
-	geompy__doc__,
-	-1,
-	geompy_methods
+	PyModuleDef_HEAD_INIT,	// m_base
+	"_geompy",				// m_name
+	geompy__doc__,			// m_doc
+	-1,						// m_size
+	geompy_methods,			// m_methods
+	NULL, 					// m_slots
+	NULL, 					// m_traverse: 
+	NULL, 					// m_clear
+	NULL  					// m_free
 };
 
-PyMODINIT_FUNC
+GPyMODINIT_FUNC
 PyInit__geompy(void) {
 	PyObject* module = PyModule_Create(&geompy_module);
 
