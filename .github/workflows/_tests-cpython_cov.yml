@@ -26,26 +26,33 @@ jobs:
           shell: bash
         - name: Build extension
           run: |
-            python3 setup.py build_ext --verbose
-        - name: Checks
+            CFLAGS="--coverage" python3 setup.py build_ext \
+            --verbose \
+            --build-lib="./src" \
+            --build-temp="./build"
+        - name: C coverage report
           run: |
-            CFLAGS='--coverage --std=c99 -Wall -g3 -O0 --verbose'
-            include='${{env.pythonLocation}}/include/python3.9' # default: Ubuntu
-            ext='so'                                            # default: Ubuntu 
-            if [[ '' =~ ^windows.* ]]; then
-                include='${{env.pythonLocation}}/include'
-                ext='pyd'
-            fi
-            libfile=`find build -type f -name *.$ext`
-            libfile_wo_ext=`basename $libfile .$ext`
-            libpath=`dirname $libfile`
-            LIBS='-lpython3.9 -l$libfile_wo_ext'                              # default: Ubuntu
-            if [[ '' =~ ^windows.* ]]; then
-                LIBPATHS='-lpython39 -l$libfile_wo_ext'
-            fi
-            gcc $CFLAGS -c tests/cpython/c/test__geompy.c -o tests/cpython/c/test__geompy.o -I"$include"
-            gcc $CFLAGS -o tests/cpython/c/test__geompy tests/cpython/c/test__geompy.o -L${{env.LD_LIBRARY_PATH}} -L"/$libpath" $LIBS
-            ./tests/cpython/c/test__geompy
-            find ${{github.workspace}}/build
-            find ${{github.workspace}}/tests
-          shell: bash
+            pytest --cov-config=./.coveragerc --verbose --color=yes --cov=geompy
+            find ./build
+#        - name: Checks
+#          run: |
+#            CFLAGS='--coverage --std=c99 -Wall -g3 -O0 --verbose'
+#            include='${{env.pythonLocation}}/include/python3.9' # default: Ubuntu
+#            ext='so'                                            # default: Ubuntu
+#            if [[ '' =~ ^windows.* ]]; then
+#                include='${{env.pythonLocation}}/include'
+#                ext='pyd'
+#            fi
+#            libfile=`find build -type f -name *.$ext`
+#            libfile_wo_ext=`basename $libfile .$ext`
+#            libpath=`dirname $libfile`
+#            LIBS='-lpython3.9 -l$libfile_wo_ext'                              # default: Ubuntu
+#            if [[ '' =~ ^windows.* ]]; then
+#                LIBPATHS='-lpython39 -l$libfile_wo_ext'
+#            fi
+#            gcc $CFLAGS -c tests/cpython/c/test__geompy.c -o tests/cpython/c/test__geompy.o -I"$include"
+#            gcc $CFLAGS -o tests/cpython/c/test__geompy tests/cpython/c/test__geompy.o -L${{env.LD_LIBRARY_PATH}} -L"/$libpath" $LIBS
+#            ./tests/cpython/c/test__geompy
+#            find ${{github.workspace}}/build
+#            find ${{github.workspace}}/tests
+#          shell: bash
