@@ -26,15 +26,12 @@ jobs:
           shell: bash
         - name: Build extension
           run: |
-            CFLAGS="--coverage" python3 setup.py build_ext \
-            --inplace
-#            --verbose \
-#            --build-lib="${{github.workspace}}/src" \
-#            --build-temp="${{github.workspace}}/build"
+            CFLAGS="--coverage" python3 setup.py build_ext --inplace --verbose
         - name: C coverage report
           run: |
             pytest --cov-config=./.coveragerc --verbose --color=yes --cov=geompy
             find ${{github.workspace}}
+            gcov -b -r `find ./build -type f -name "*.o"`
 #        - name: Checks
 #          run: |
 #            CFLAGS='--coverage --std=c99 -Wall -g3 -O0 --verbose'
