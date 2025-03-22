@@ -26,10 +26,7 @@ jobs:
           shell: bash
         - name: Build extension
           run: |
-            CFLAGS="--coverage" python3 setup.py build_ext \
-            --verbose \
-            --build-lib="./src" \
-            --build-temp="./build"
+            CFLAGS="--coverage" python3 setup.py build_ext --verbose --build-lib="./src" --build-temp="./build"
         - name: C coverage report
           run: |
             pytest --cov-config=./.coveragerc --verbose --color=yes --cov=geompy
