@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = 'geompy'
-version = '0.2.1a'
+version = '0.3.1a'
 authors = [
   {name = 'Sam Nazarov', email = 'samnnazarov@gmail.com'},
 ]
