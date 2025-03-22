@@ -32,6 +32,16 @@ jobs:
             pytest --cov-config=./.coveragerc --verbose --color=yes --cov=geompy
             find ${{github.workspace}}
             gcov -b -r `find ./build -type f -name "*.o"`
+        - name: Upload coverage to Codecov
+          uses: codecov/codecov-action@v5
+          with:
+            gcov: true
+            fail_ci_if_error: true
+            flags: cpy-3.9
+            name: unittests
+            slug: sammnnz/geompy
+            token: ${{ secrets.CODECOV_TOKEN }}
+            verbose: true
 #        - name: Checks
 #          run: |
 #            CFLAGS='--coverage --std=c99 -Wall -g3 -O0 --verbose'
