@@ -1,0 +1,98 @@
+name: Tests implementation
+
+on:
+   workflow_call:
+     inputs:
+       ref:
+         required: false
+         type: string
+         default: ${{github.ref_name}}
+       os:
+         required: true
+         type: string
+       py:
+         required: true
+         type: string
+       cov:
+         required: false
+         type: string
+         default: 'false'
+       lint:
+         required: false
+         type: string
+         default: 'false'
+       typecheck:
+         required: false
+         type: string
+         default: 'false'
+     secrets:
+       token:
+         required: true
+       # https://giters.com/codecov/codecov-action/issues/1738
+       codecov_token:
+         required: false
+
+jobs:
+  pre:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse ref
+        run: |
+          if [ ${{github.event_name}} == 'pull_request' ]; then
+            echo "CURRENTREF=${{github.event.pull_request.head.ref}}" >> $GITHUB_ENV
+          else
+            echo "CURRENTREF=${{inputs.ref}}" >> $GITHUB_ENV
+          fi
+  tests:
+    runs-on: ${{inputs.os}}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: sammnnz/geompy
+          ref: ${{env.CURRENTREF}}
+      - name: Setup Python ${{inputs.py}}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{inputs.py}}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[testing,linting,typechecking]
+      - name: Build extension
+        if: ${{inputs.cov == 'true'}}
+        run: |
+          gcc --version; gcov --version;
+          CC="gcc" CFLAGS="--coverage" python3 setup.py build_ext --inplace --verbose
+      - name: Test with pytest
+        run: |
+          pytest --assert=plain --color=yes --cov=geompy --cov-config=.coveragerc --verbose
+      - name: Pytest-cov coverage report in xml
+        if: ${{inputs.cov == 'true'}}
+        run: |
+          coverage xml -o coverage.xml
+      - name: GCOV coverage report
+        if: ${{inputs.cov == 'true'}}
+        run: |
+          gcov -b -r `find ./build -type f -name "*.o"` || echo Note: Skip gcov coverage report
+      - name: Upload coverage to Codecov
+        if: ${{inputs.cov == 'true'}}
+        uses: codecov/codecov-action@v5
+        with:
+          gcov: true
+          fail_ci_if_error: true
+          flags: py-${{inputs.py}}
+          name: unittests
+          slug: sammnnz/geompy
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+      - name: Linter
+        if: ${{inputs.lint == 'true'}}
+        run: |
+          flake8 src tests
+      - name: Type-checker
+        if: ${{inputs.typecheck == 'true'}}
+        run: |
+          mypy src

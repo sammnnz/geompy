@@ -32,6 +32,13 @@ on:
          - '3.8'
          - '3.9'
          - '3.10'
+       cov:
+         required: false
+         type: choice
+         default: 'false'
+         options:
+           - 'true'
+           - 'false'
        lint:
          required: false
          type: choice
@@ -49,10 +56,11 @@ on:
 
 jobs:
   tests-call:
-     uses: ./.github/workflows/tests.yml
+     uses: ./.github/workflows/tests_imp.yml
      with:
        os: ${{inputs.os}}
        py: ${{inputs.py}}
+       cov: ${{inputs.cov}}
        lint: ${{inputs.lint}}
        typecheck: ${{inputs.typecheck}}
      secrets:

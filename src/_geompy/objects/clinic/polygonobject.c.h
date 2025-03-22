@@ -18,8 +18,8 @@ PyDoc_STRVAR(geompy_polygon_is_inner_point__doc__,
 "\n"
 "else False (point lies outside the polygon).");
 
-#define _GEOMPY_POLYGON_IS_INNER_POINT_METHODDEF    \
-    {"is_inner_point", (PyCFunction)geompy_polygon_is_inner_point, METH_FASTCALL|METH_KEYWORDS, geompy_polygon_is_inner_point__doc__},
+#define GEOMPY_POLYGON_IS_INNER_POINT_METHODDEF    \
+    {"is_inner_point", (PyCFunction)(void(*)(void))geompy_polygon_is_inner_point, METH_FASTCALL|METH_KEYWORDS, geompy_polygon_is_inner_point__doc__},
 
 static PyObject *
 geompy_polygon_is_inner_point_impl(PyPolygonObject *self, PyObject *point);
@@ -36,7 +36,7 @@ geompy_polygon_is_inner_point(PyPolygonObject *self, PyObject *const *args, Py_s
         &point)) {
         goto exit;
     }
-    return_value = geompy_polygon_is_inner_point_impl(self, point);
+    return_value = geompy_polygon_is_inner_point_impl((PyPolygonObject *)self, point);
 
 exit:
     return return_value;
