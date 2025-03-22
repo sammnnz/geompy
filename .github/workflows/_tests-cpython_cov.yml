@@ -33,7 +33,7 @@ jobs:
         - name: C coverage report
           run: |
             pytest --cov-config=./.coveragerc --verbose --color=yes --cov=geompy
-            find ./build
+            find .
 #        - name: Checks
 #          run: |
 #            CFLAGS='--coverage --std=c99 -Wall -g3 -O0 --verbose'
