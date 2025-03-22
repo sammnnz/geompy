@@ -13,6 +13,7 @@ from geompy import polygon, generate_random_polygon
 #                 #
 # # # # # # # # # #
 
+
 @pytest.mark.parametrize("points", [
     ((0, 0), (1, 2), (2, 0)),
     ((0, 0), (1, 2), (2, 0), (3, 4))
