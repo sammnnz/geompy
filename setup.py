@@ -3,7 +3,7 @@ setup.py
 """
 import os
 
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 
 # https://stackoverflow.com/questions/18085571/pip-install-error-setup-script-specifies-an-absolute-path
 current_dir = "./"
@@ -15,7 +15,7 @@ if __name__ == '__main__':
                                  sources=[os.path.join(source_dir, '_geompy.c'),
                                           os.path.join(source_dir, 'objects', 'polygonobject.c')],
                                  include_dirs=[include_dir],
-                                 extra_compile_args=['--std=c99', '--coverage'],
+                                 extra_compile_args=['--std=c99'],
                                  language="c"
                                  )
                        ]
