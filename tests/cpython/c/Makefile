@@ -5,19 +5,14 @@
 #   @Note:		This makefile only for use from `pwd` directory with pyenv.
 
 SHELL := /bin/bash
-TARGET = test__geompy
+TARGET = cheak__geompy
 
 # Inputs (default values)
-build_dir  = $(shell pwd)
-coverage   = 0
-debug      = 0
-py_version = $(shell python3 -c \
+build_dir             = $(shell pwd)
+debug                 = 0
+lib_sitepackages_path = 
+py_version            = $(shell python3 -c \
 "from sysconfig import get_config_var; print(get_config_var('py_version_nodot'));")
-src_path   = .
-
-PY_PLATBASE=$(shell cygpath -m $(shell $(PYTHON_V) -c \
-"from sysconfig import get_config_var; print(get_config_var('installed_platbase'));"))
-PYTHON_V := python$(py_version)
 
 BUILD_DIR := ./build
 SRC_DIRS  := ./
@@ -25,38 +20,41 @@ SRC_DIRS  := ./
 SRCS := $(shell find $(SRC_DIRS) -maxdepth 1 -type f -name "*.c")
 OBJS := $(SRCS:%.c=$(BUILD_DIR)/%.o)
 
-CC := gcc
+CC     := gcc
+PYTHON := python$(py_version)
 
-INCFLAGS    := -I"$(shell $(PYTHON_V) -c \
+EXT_SUFFIX         = $(shell $(PYTHON) -c \
+"from sysconfig import get_config_var; print(get_config_var('EXT_SUFFIX'));")
+INSTALLED_PLATBASE = $(shell cygpath -m $(shell $(PYTHON) -c \
+"from sysconfig import get_config_var; print(get_config_var('installed_platbase'));"))
+PROJECT_SRC_PATH   = $(shell cygpath -m "`pwd`/../../../src")
+TESTS_CPYTHON_PATH = $(shell cygpath -m "`pwd`/../")
+
+INCFLAGS    := -I"$(shell $(PYTHON) -c \
 "from sysconfig import get_path; print(get_path('include'));")"
-# INCFLAGS    += -I"`pwd`/../../../src/_geompy/include"
 CDEBUGFLAGS := $(shell if [[ $(debug) == 1 ]]; then echo \
 -g3 -O0 \
-; else echo ; fi)
+; else echo -O0; fi)
 # https://gcc.gnu.org/onlinedocs/gcc-14.2.0/gcc/Preprocessor-Options.html#Options-Controlling-the-Preprocessor
 CDEFSFLAGS  := \
--D'SRC_PATH="$(src_path)"' \
--D'TESTS_CPYTHON_PATH="$(tests_cpython_path)"' \
--D'LIB_SITEPACKAGES_PATH="$(lib_sitepackages_path)"' \
--D'PY_PLATBASE="$(PY_PLATBASE)"'
+-D'LIB_SITEPACKAGES_PATH=$(lib_sitepackages_path)' \
+-D'PY_PLATBASE=$(INSTALLED_PLATBASE)' \
+-D'SRC_PATH=$(PROJECT_SRC_PATH)' \
+-D'TESTS_CPYTHON_PATH=$(TESTS_CPYTHON_PATH)'
 # https://gcc.gnu.org/onlinedocs/gcc-14.2.0/gcc/Option-Summary.html
 CFLAGS 	    := -Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -Wcast-align \
 -Wconversion -Wsign-conversion -Wnull-dereference -fdiagnostics-color=always \
--fvisibility=hidden -std=c99 -pedantic -O2 $(INCFLAGS)
-CGCOVFLAGS   = $(shell if [[ $(coverage) == 1 ]]; then echo \
--fprofile-arcs -ftest-coverage -fprofile-abs-path -O0 \
-; else echo ; fi)
+-fvisibility=hidden -std=c99 -pedantic $(INCFLAGS)
+CGCOVFLAGS   = 
 
-LIBDIRS    	:= -L"$(shell $(PYTHON_V) -c \
+LIBDIRS    	:= -L"$(shell $(PYTHON) -c \
 "from sysconfig import get_config_var; print(get_config_var('installed_platbase') + '/libs');")"
-# LIBDIRS     += -L"$(shell find "$(build_dir)" -maxdepth 1 -type f -name "_geompy.*$(py_version)*.pyd")"
-# PYDBASENAME := $(shell baseName $(shell find "$(build_dir)" -maxdepth 1 -type f -name "_geompy.*$(py_version)*.pyd"))
-# PYDBASENAME := $(PYDBASENAME:%.pyd=%)
-LIBNAMES    := python$(py_version)
-LDFLAGS    	:= $(LIBDIRS) $(addprefix -l,$(LIBNAMES))
-LDGCOVFLAGS := $(shell if [[ $(coverage) == 1 ]]; then echo \
---coverage \
+LIBNAMES    := check python$(py_version)
+LIBNAMES    += $(shell if [[ $(EXT_SUFFIX) =~ .so$ ]]; then echo \
+m subunit \
 ; else echo ; fi)
+LDFLAGS    	:= $(LIBDIRS) $(addprefix -l,$(LIBNAMES))
+LDGCOVFLAGS := 
 
 $(build_dir)/$(TARGET): $(OBJS)
 	mkdir -p $(dir $@)
@@ -70,4 +68,4 @@ $(BUILD_DIR)/%.o: %.c
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -f $(build_dir)/test__geompy
+	rm -f $(build_dir)/cheak__geompy
