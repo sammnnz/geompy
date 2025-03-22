@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "(gdb) Launch test__geompy",
+        "name": "(gdb) Launch cheak__geompy",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/tests/cpython/c/test__geompy",
+        "program": "${workspaceFolder}/tests/cpython/c/cheak__geompy",
         "args": [],
         "stopAtEntry": false,
         "cwd": "${fileDirname}",
@@ -26,8 +26,8 @@
                 "ignoreFailures": true
             }
         ],
-        "preLaunchTask": "Pre Launch [test__geompy]",
-        "postDebugTask": "Post Launch [test__geompy]"
+        "preLaunchTask": "Pre Launch [cheak__geompy]",
+        "postDebugTask": "Post Launch [cheak__geompy]"
     },
     {
         "name": "(gdb) Launch curent file",

@@ -7,7 +7,6 @@
             "PY_VERSION": "39",
             "PY_VERSION_FULL": "3.9.13",
             "SRC_PATH": "${workspaceFolder}/src",
-            "TESTS_PATH": "${workspaceFolder}/tests",
             "VENV_ROOT": "${workspaceFolder}/.vs"
         }
     },
@@ -111,24 +110,13 @@
                     "-f",
                     "Makefile",
                     "build_dir=`pwd`",
-                    "debug=1",
+                    "debug=$DEBUG",
+                    "lib_sitepackages_path=$(shell cygpath -m '$VENV_ROOT/.venv$PY_VERSION_FULL/Lib/site-packages')",
                     "py_version=$PY_VERSION",
-                    "src_path=$(shell cygpath -m '$SRC_PATH')",
-                    "tests_cpython_path=$(shell cygpath -m '$TESTS_PATH/cpython')",
-                    "lib_sitepackages_path=$(shell cygpath -m '$VENV_ROOT/.venv$PY_VERSION_FULL/Lib/site-packages')"
                 ]
             },
             "command": "make",
-            "args": [
-                "-f",
-                "Makefile",
-                "build_dir=`pwd`",
-                "debug=1",
-                "py_version=$PY_VERSION",
-                "src_path=$SRC_PATH",
-                "tests_cpython_path=$TESTS_PATH/cpython",
-                "lib_sitepackages_path=$VENV_ROOT/.venv$PY_VERSION_FULL/Lib/site-packages"
-            ],
+            "args": [],
             "options": {
                 "cwd": "${workspaceFolder}/tests/cpython/c"
             },
@@ -139,7 +127,7 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "detail": "Task for build test__geompy exec.",
+            "detail": "Task for build cheak__geompy exec.",
             "dependsOn":[
                 "Create pyenv .venv (win)"
             ]
@@ -179,34 +167,6 @@
             },
             "detail": "Task for clean after [Test CPython API]",
         },
-        // {
-        //     "label": "Install test deps",
-        //     "type": "shell",
-        //     "windows": {
-        //         "options": {
-        //             "shell": {
-        //                 "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
-        //                 "args": [
-        //                     "--login",
-        //                     "-i",
-        //                     "-c",
-        //                 ]
-        //             },
-        //         }
-        //     },
-        //     "command": ".",
-        //     "args": [
-        //         "./deps.sh",
-        //     ],
-        //     "options": {
-        //         "cwd": "${workspaceFolder}/tests/cpython/c"
-        //     },
-        //     "group": {
-        //         "kind": "build",
-        //         "isDefault": false
-        //     },
-        //     "detail": "Task for install test dependencies.",
-        // },
         {
             "label": "Coverage report",
             "type": "shell",
@@ -223,10 +183,14 @@
                 }
             },
             "command": "gcov",
+            // https://stackoverflow.com/questions/67906080/ignore-error-from-the-preivous-build-task-in-tasks-json
             "args": [
                 "-b",
                 "_geompy.c",
-                "objects/polygonobject.c"
+                "objects/polygonobject.c",
+                "||",
+                "echo",
+                "Skip coverage report"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/src/_geompy/build"
@@ -338,7 +302,7 @@
             "detail": "Task for clean all pyenv venvs",
         },
         {
-            "label": "Pre Launch [test__geompy]",
+            "label": "Pre Launch [cheak__geompy]",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -347,7 +311,7 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "detail": "Pre-Task for [test__geompy] launch.",
+            "detail": "Pre-Task for [cheak__geompy] launch.",
             "dependsOn":[
                 "Test CPython API",
                 "Build _geompy",
@@ -355,7 +319,7 @@
             "dependsOrder": "sequence"
         },
         {
-            "label": "Post Launch [test__geompy]",
+            "label": "Post Launch [cheak__geompy]",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -364,7 +328,7 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "detail": "Post-Task for [test__geompy] launch.",
+            "detail": "Post-Task for [cheak__geompy] launch.",
             "dependsOn":[
                 "Coverage report",
                 "Clean [Build _geompy]",
