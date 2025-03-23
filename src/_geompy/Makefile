@@ -37,7 +37,7 @@ CFLAGS 	    := -Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -Wcast-align \
 -Wconversion -Wsign-conversion -Wnull-dereference -fdiagnostics-color=always \
 -fvisibility=hidden -std=c99 -pedantic -fPIC $(INCFLAGS) $(CDLLFLAGS)
 CGCOVFLAGS   = $(shell if [[ $(coverage) == 1 ]]; then echo \
--fprofile-arcs -ftest-coverage -fprofile-abs-path -O0 \
+-fprofile-arcs -ftest-coverage -O0 \
 ; else echo ; fi)
 
 LIBDIRS    	 = -L"$(shell $(PYTHON) -c \

@@ -186,6 +186,7 @@
             // https://stackoverflow.com/questions/67906080/ignore-error-from-the-preivous-build-task-in-tasks-json
             "args": [
                 "-b",
+                "-r",
                 "_geompy.c",
                 "objects/polygonobject.c",
                 "||",
